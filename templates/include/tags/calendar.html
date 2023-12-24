@@ -1,0 +1,49 @@
+{% load i18n %}
+
+<div class="sidebar-element">
+
+    <div id="calendar_wrap">
+
+        <table id="wp-calendar">
+
+            <caption>
+                <a href="#" id="prev">&lsaquo;</a>
+                <span>{{ current_datetime|date:"F" }}</span>
+                <a href="#" id="next">&rsaquo;</a>
+            </caption>
+
+            <thead>
+                <tr>
+                    <th scope="col" title="{% trans 'Понедельник' %}">{% trans 'Пн' %}</th>
+                    <th scope="col" title="{% trans 'Вторник' %}">{% trans 'Вт' %}</th>
+                    <th scope="col" title="{% trans 'Среда' %}">{% trans 'Ср' %}</th>
+                    <th scope="col" title="{% trans 'Четверг' %}">{% trans 'Чт' %}</th>
+                    <th scope="col" title="{% trans 'Пятница' %}">{% trans 'Пт' %}</th>
+                    <th scope="col" title="{% trans 'Суббота' %}">{% trans 'Сб' %}</th>
+                    <th scope="col" title="{% trans 'Воскресенье' %}">{% trans 'Вс' %}</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for week in month %}
+                    <tr>
+                        {% for day in week %}
+                            {% if day == 0 %}
+                                <td colspan="0" class="pad">&nbsp;</td>
+                            {% elif day in posts_days %}
+                                <td><a href="{% url 'blog_list_by_date' day %}">{{ day }}</a></td>
+                            {% else %}
+                                <td>{{ day }}</td>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div> <!-- /.calendar_wp -->
+
+</div><!-- /.sidebar-element -->

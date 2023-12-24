@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% load breadcrumbs i18n %}
+
+{% block title %}404{% endblock title %}
+
+{% block content %}
+
+    <section class="row bredcrumbs">
+
+        <nav class="span12 path">
+
+            <ul>
+                {% trans 'Главная' as main_trans %}
+                {% trans 'Ошибка 404' as error_trans %}
+                {% url 'blog_list' as home_url %}
+                {% breadcrumb_home home_url main_trans %}
+                {% breadcrumb_active request.path error_trans 2 %}
+            </ul>
+
+        </nav>
+
+    </section> <!-- /.row [breadcrumbs] -->
+
+    <section class="row">
+
+        <div class="error-box span12">
+
+            <div class="row">
+
+                <div class="span12 error-message">
+                    <h1>
+                        <span>{% trans 'ошибка' %}</span>
+                        <b>404</b>
+                    </h1>
+                </div>
+
+                <div class="span12">
+                    <p>{% trans 'Страница не существует' %}</p>
+                </div>
+
+                <div class="span4 offset4">
+                    <a href="{% url 'blog_list' %}" class="button button-read large-button">
+                        {% trans 'Вернуться на главную' %}
+                    </a>
+                </div>
+
+            </div> <!-- /.row -->
+
+        </div>
+
+    </section>
+
+{% endblock content %}

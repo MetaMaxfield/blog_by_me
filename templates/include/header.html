@@ -1,0 +1,93 @@
+{% load i18n %}
+
+<header class="row">
+
+    <div class="span12">
+
+        <div class="identity">
+            <a href="{% url 'blog_list' %}" class="logo">Maxfield</a>
+            <b>...</b>
+            <p>{% trans 'Мой демонстрационный веб-проект' %}</p>
+        </div>
+
+    </div> <!-- /.span12 [identity] -->
+
+    <div class="span12 nav-box">
+
+        <nav class="span9 main-menu">
+
+            <input type="checkbox" id="dropdown-menu" class="custom-dropdown">
+
+            <label for="dropdown-menu">{% trans 'Меню' %}<b></b></label>
+
+            <ul>
+
+                <li>
+                    <a href="{% url 'blog_list' %}">{% trans 'Главная' %}</a>
+                </li>
+
+                <li>
+                    <a href="{% url 'video_list' %}">{% trans 'Видео' %}</a>
+                </li>
+
+                <li>
+                    <a href="{% url 'category_list' %}">{% trans 'Категории' %}</a>
+                </li>
+
+                <li>
+                    <a href="{% url 'author_list' %}">{% trans 'Авторы' %}</a>
+                </li>
+
+                <li>
+                    <a href="{% url 'contact' %}">{% trans 'О проекте' %}</a>
+                </li>
+
+                <li>
+
+                    <a href="#">{% trans 'Язык' %}</a>
+
+                    <ul>
+
+                        <li>
+
+                            <form action="{% url 'set_language' %}" method="post">{% csrf_token %}
+
+                                <input name="next" type="hidden" value="{{ redirect_to }}">
+
+                                <select name="language" onchange="this.form.submit()">
+
+                                    {% get_available_languages as LANGUAGES %}
+                                    {% get_language_info_list for LANGUAGES as languages %}
+
+                                    {% for language in languages %}
+                                        <option value="{{ language.code }}"
+                                                {% if language.code == LANGUAGE_CODE %} selected {% endif %}>
+                                            {{ language.name_local }}
+                                        </option>
+                                    {% endfor %}
+
+                                </select>
+
+                            </form>
+
+                        </li>
+
+                    </ul>
+
+                </li>
+
+            </ul>
+
+        </nav> <!-- /.span8 [main-menu] -->
+
+        <form action="{% url 'search' %}" method="get" class="span3 search-nav">
+            <p>
+                <input type="submit">
+                <input type="text" placeholder="{% trans 'Поиск' %}" name="q">
+<!--                <input type="hidden" value="{{ LANGUAGE_CODE }}" name="language_code" >-->
+            </p>
+        </form>
+
+    </div> <!-- /.span12 [nav-box] -->
+
+</header> <!-- /.row -->

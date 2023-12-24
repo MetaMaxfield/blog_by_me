@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+
+{% load breadcrumbs common_tag users_tag i18n %}
+
+{% block title %}{{ author.username }}{% endblock title %}
+
+{% block content %}
+
+    <section class="row bredcrumbs">
+
+        <nav class="span12 path">
+
+            <ul>
+                {% trans 'Главная' as main_trans %}
+                {% trans 'Авторы' as authors_trans %}
+                {% url 'blog_list' as home_url %}
+                {% breadcrumb_home home_url main_trans %}
+                {% url 'author_list' as authors_url %}
+                {% breadcrumb_item authors_url authors_trans 2 %}
+                {% url 'author_detail' author.id as author_url %}
+                {% breadcrumb_active author_url author.username 3 %}
+            </ul>
+
+        </nav>
+
+    </section> <!-- /.row [breadcrumbs] -->
+
+    <section class="row">
+
+        <div class="span12 element-box">
+
+            <div class="row event-preview">
+
+                <div class="span7">
+                    <figure>
+                            <img src="{{ author.get_image_url }}" alt="event">
+                    </figure>
+                </div>
+
+                <div class="span5">
+
+                    <h3>{{ author.username }}</h3>
+
+                    <p>
+                        <a href="single_event.html">
+
+                            {% if author.is_superuser %}
+                                <span class="label colored-green">{% trans 'Администратор' %}</span>
+                            {% endif %}
+
+                            {% for group in author.get_user_groups %}
+                                <span class="label colored-green">{{ group }}</span>
+                            {% endfor %}
+
+                        </a>
+                    </p>
+
+                    <div class="ya-share2" data-curtain data-shape="round"
+                         data-color-scheme="blackwhite"
+                         data-title="{{ author.username }}"
+                         data-services="vkontakte,odnoklassniki,telegram">
+                    </div>
+
+                    <p>
+                        {{ author.descriptions }}
+                    </p>
+
+                    <ul class="event-list">
+
+                        <li>
+                            <b>{% trans 'В команде с' %}:</b>
+                            {{ author.date_joined }}
+                        </li>
+
+                        <li>
+
+                            <b>{% trans 'Возраст' %}:</b>
+
+                            {% if author.birthday %}
+                                {% age_tag author.birthday as age %}
+                                {% if LANGUAGE_CODE == 'ru' %}
+                                    {{ age }}{{ age|ru_plural:"год, года, лет" }}
+                                {% else %}
+                                    {{ age }} year{{ age|pluralize }}
+                                {% endif %}
+                            {% else %}
+                                {% trans 'Неизвестно' %}
+                            {% endif %}
+
+                        </li>
+
+                        <li>
+
+                            <b>E-mail:</b>
+
+                            {% if author.email %}
+                                {{ author.email }}
+                            {% else %}
+                                {% trans 'Неизвестно' %}
+                            {% endif %}
+
+                        </li>
+
+                        <li>
+                            <b>{% trans 'Количество постов' %}:</b>
+                            {{ author.post_author.count }}
+                        </li>
+
+                        <li>
+                            <b>{% trans 'Количество лайков к постам' %}:</b>
+                            {{ author.total_likes }}
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </div> <!-- /.row -->
+
+            <p>
+                {{ author.description }}
+            </p>
+
+        </div> <!-- /.span12 -->
+
+        <div class="span12 page-intro">
+            <h1>{% trans 'Последние опубликованные посты' %}:</h1>
+        </div> <!-- /.span12 -->
+
+        {% with author_last_posts=author.get_last_posts_user %}
+
+            {% if author_last_posts %}
+
+                {% for post in author_last_posts %}
+
+                    <article class="span4 element-box event-item">
+
+                        <figure>
+                            <a href="{{ post.get_absolute_url }}">
+                                <img src="{{ post.image.url }}">
+                            </a>
+                        </figure>
+
+                        <h3 class="green-bage">
+                            <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+                        </h3>
+
+                        <p>
+                            <a href="{% url 'category_list' %}">
+                                <span class="label colored-green">{{ post.category }}</span>
+                            </a>
+                        </p>
+
+                        <p>
+                            {{ post.body|safe|truncatewords:20 }}
+                        </p>
+
+                        <footer class="events-bottom-bar clearfix">
+                            <b>{{ post.publish|date:"d F o" }}</b>
+                            <b class="time-info fr">{{ post.publish|date:"H:i" }}</b>
+                        </footer>
+
+                    </article> <!-- /.span4 -->
+
+                {% endfor %}
+
+            {% else %}
+
+                <div class="span12 page-intro">
+                    <h2>{% trans 'Автор пока не добавил ни одного поста' %}.</h2>
+                </div> <!-- /.span12 -->
+
+            {% endif %}
+
+        {% endwith %}
+
+    </section><!-- /.row -->
+
+{% endblock content %}

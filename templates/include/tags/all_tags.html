@@ -1,0 +1,17 @@
+{% load i18n %}
+
+<div class="sidebar-element">
+
+    <h3>{% trans 'Популярные теги' %}</h3>
+
+    <ul class="tags">
+        {% for tag in all_tags %}
+            <li>
+                <a href="{% url 'blog_list_by_tag' tag.slug %}">{{ tag.name }}
+                    <b>{{ tag.npost }}</b>
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+
+</div><!-- /.sidebar-element -->

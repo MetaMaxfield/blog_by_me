@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% load breadcrumbs common_tag post_tag i18n %}
+
+{% block title %}{% trans 'Видео' %}{% endblock title %}
+
+{% block content %}
+
+    <div class="row">
+
+        <section class="bredcrumbs">
+
+            <nav class="span12 path">
+                <ul>
+                    {% trans 'Главная' as main_trans %}
+                    {% trans 'Видео' as video_trans %}
+                    {% url 'blog_list' as home_url %}
+                    {% breadcrumb_home home_url main_trans %}
+                    {% url 'video_list' as video_list_url %}
+                    {% breadcrumb_active video_list video_trans 2 %}
+                </ul>
+            </nav>
+
+        </section> <!-- /.row [breadcrumbs] -->
+
+        <section class="span9">
+
+            {% for video in video_list %}
+
+                <article class="element-box">
+
+                    <header class="element-top-bar clearfix">
+                        <a href="{% url 'author_detail' video.post_video.author.id %}"
+                           class="user-info fl">{{ video.post_video.author }}
+                        </a>
+                        <b class="time-info fr">{{ video.create_at }}</b>
+                    </header>
+
+                    <h2 style="text-align: center;>">
+                        <a href="{{ video.post_video.get_absolute_url }}">
+                            {{ video.title }}
+                        </a>
+                    </h2>
+
+                    <figure>
+                        <video id="my-video"
+                               class="video-js vjs-theme-city"
+                               controls
+                               preload="auto"
+                               style="width:100%;"
+                               data-setup="{}">
+                            <source src="{% url 'stream' video.id %}" type="video/mp4"/>
+                            <source src="{% url 'stream' video.id %}" type="video/webm"/>
+                        </video>
+                    </figure>
+
+                    <p style="text-align: center">{{ video.description }}</p>
+
+                    <footer class="element-bottom-bar">
+
+                        <ul>
+
+                            <li>
+                                <a href="#" class="comment-icon">
+                                    <b>{{ video.ncomments }}</b>
+                                    {% if LANGUAGE_CODE == 'ru' %}
+                                        {{ video.ncomments|ru_plural:"Комментарий,Комментария,Комментариев" }}
+                                    {% else %}
+                                        Comment{{ post.ncomments|pluralize }}
+                                    {% endif %}
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="{% url 'category_list' %}">{{ video.post_video.category.name }}</a>
+                            </li>
+
+                            <li>
+                                {% if LANGUAGE_CODE == 'ru' %}
+                                    <div style="text-align: center;>"
+                                         class="ya-share2"
+                                         data-curtain data-color-scheme="blackwhite"
+                                         data-limit="0" data-more-button-type="long"
+                                         data-title="{{ video.post_video.title }}"
+                                         data-url="{{ request.build_absolute_uri|share_url_format }}{{ video.post_video.get_absolute_url }}"
+                                         data-services="vkontakte,odnoklassniki,telegram">
+                                    </div>
+                                {% else %}
+                                    <div style="text-align: center;>"
+                                         class="ya-share2"
+                                         data-curtain data-lang="en" data-color-scheme="blackwhite"
+                                         data-limit="0" data-more-button-type="long"
+                                         data-title="{{ video.post_video.title }}"
+                                         data-url="{{ request.build_absolute_uri|share_url_format }}{{ video.post_video.get_absolute_url }}"
+                                         data-services="vkontakte,odnoklassniki,telegram">
+                                    </div>
+                                {% endif %}
+                            </li>
+
+                        </ul>
+
+                    </footer>
+
+                </article> <!-- /.element-box [video]-->
+
+            {% endfor %}
+
+            <!--<div class="row-fluid">-->
+                <!--<div class="demo-grid colored-blue span12">-->
+                    <!--<a href="#" class="button button-load large-button">Показать ещё</a>-->
+                <!--</div>-->
+            <!--</div>-->
+
+        </section>
+
+        {% include 'include/sidebar.html' %}
+
+    </div>
+
+{% endblock content %}

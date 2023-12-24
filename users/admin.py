@@ -1,0 +1,80 @@
+from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
+from django.utils.safestring import mark_safe
+from .models import CustomUser
+from modeltranslation.admin import TranslationAdmin
+
+
+@admin.register(CustomUser)
+class CustomUserAdmin(UserAdmin, TranslationAdmin):
+    """Расширенная модель пользователя"""
+    model = CustomUser
+    list_display = (
+        'username', 'email', 'get_user_groups', 'is_superuser', 'get_image'
+    )
+    list_display_links = ('username',)
+    list_filter = ('is_staff', 'is_superuser', 'is_active', 'groups')
+    readonly_fields = ['get_image', 'last_login', 'date_joined']
+    fieldsets = [
+        [None, {'fields': ['username', 'password']}],
+        [
+            ('Personal info'), {
+                'fields': (
+                    'first_name', 'last_name', 'email',
+                    'birthday', 'description', ('image', 'get_image')
+                )
+            }
+        ],
+        [
+            ('Permissions'),
+            {
+                'fields': (
+                    'is_active',
+                    'is_staff',
+                    'is_superuser',
+                    'groups',
+                    'user_permissions',
+                ),
+            },
+        ],
+        [('Important dates'), {'fields': ('last_login', 'date_joined')}],
+    ]
+    add_fieldsets = (
+        (
+            None,
+            {
+                "classes": ("wide",),
+                "fields": ("username", "email", "password1", "password2"),
+            },
+        ),
+    )
+
+    def get_image(self, obj):
+        # Отображение изображения в панеле администрации
+        if obj.image:
+            return mark_safe(
+                f'<img src={obj.image.url} width="100", height="100"'
+            )
+        return 'Нет изображения'
+    get_image.short_description = 'Изображение'
+
+    def get_fieldsets(self, request, obj=None):
+        # Отображение полей в зависимости от статуса пользователя
+        fieldsets = super(CustomUserAdmin, self).get_fieldsets(request, obj)
+        if request.user.is_superuser:
+            return fieldsets
+        elif request.user.id == obj.id:
+            fieldsets.pop(2)
+            return fieldsets
+        else:
+            fieldsets[0][1]['fields'] = ['username', ]
+            fieldsets.pop(2)
+            return fieldsets
+
+    def has_change_permission(self, request, obj=None):
+        # Разрешение на редактирование модели только суперпользователю
+        # или владельцу
+        if request.user.is_superuser or request.user == obj:
+            return True
+        else:
+            return False

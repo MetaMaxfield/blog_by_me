@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% load contact_tag breadcrumbs i18n %}
+
+{% block title %}{% trans 'О проекте' %}{% endblock title %}
+
+{% block content %}
+
+    <section class="bredcrumbs">
+
+            <nav class="span12 path">
+                <ul>
+                    {% trans 'Главная' as main_trans %}
+                    {% trans 'О проекте' as about_trans %}
+                    {% url 'blog_list' as home_url %}
+                    {% breadcrumb_home home_url main_trans %}
+                    {% url 'contact' as contact_url %}
+                    {% breadcrumb_active contact_url about_trans 2 %}
+                </ul>
+            </nav>
+
+    </section> <!-- /.row [breadcrumbs] -->
+
+    <section class="row">
+
+        <div class="span12 element-box">
+
+            <figure class="map-box">
+
+                <iframe width="425" height="360" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2482.2942594025994
+                        !2d46.04925847643735!3d51.52616247181764!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.
+                        1!3m3!1m2!1s0x4114c7ede1d12ea3%3A0xdb1366749e14b59a!2z0L3QsNCxLiDQmtC-0YHQvNC-
+                        0L3QsNCy0YLQvtCyLCDQodCw0YDQsNGC0L7Qsiwg0KHQsNGA0LDRgtC-0LLRgdC60LDRjyDQvtCx0Lsu!
+                        5e0!3m2!1sru!2sru!4v1686393022307!5m2!1sru!2sru">
+                </iframe>
+
+            </figure>
+
+            <figure class="map-box">
+                    {{ flatpage.newflatpage.description|safe }}
+            </figure>
+
+            <div class="row contact-info">
+
+                <aside class="span3a">
+
+                    <h2>{% trans 'Контактные данные' %}</h2>
+
+                    <ul>
+
+                        <li>
+                            <p>
+                                <b>&#9993;</b>
+                                <a href="mailto:example@example.com">
+                                    {{ flatpage.newflatpage.email_contact }}
+                                </a>
+                            </p>
+                        </li>
+
+                        <li>
+                            <p>
+                                <b>&#9990;</b>
+                                {{ flatpage.newflatpage.phone1_num|format_phone_num }}
+                            </p>
+                        </li>
+
+                        <li>
+                            <p>
+                                <b>&#9742;</b>
+                                {{ flatpage.newflatpage.phone2_num|format_phone_num }}
+                            </p>
+                        </li>
+
+                    </ul>
+
+                </aside>
+
+                <div class="span9a">
+
+                    <h2>{% trans 'Связь с нами' %}</h2>
+
+                    <div id="contact_form_result"></div>
+
+                    <form id="contact_page_form"
+                          action="{% url 'feedback' %}"
+                          method="post"
+                          class="comment-form row-fluid">
+
+                        {% csrf_token %}
+
+                        <p>
+                            <label for="name" class="span2">{% trans 'Имя' %}</label>
+                            {{ form.name }}
+                        </p>
+
+                        <p>
+                            <label for="email" class="span2">E-mail</label>
+                            {{ form.email }}
+                        </p>
+
+                        <p>
+                            <label for="phone" class="span2">{% trans 'Телефон' %}</label>
+                            {{ form.phone }}
+                        </p>
+
+                        <p>
+                            <label for="mess" class="span2">{% trans 'Сообщение' %}</label>
+                            {{ form.message }}
+                        </p>
+
+                        <p>
+                            <input type="submit" value="{% trans 'Отправить' %}"
+                                   class="button button-load large-button offset2 span4">
+                        </p>
+
+                        {{ form.captcha }}
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+{% endblock content %}

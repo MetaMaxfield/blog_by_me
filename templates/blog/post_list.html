@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% load breadcrumbs common_tag post_tag i18n %}
+
+{% block title %}Blog by Me{% endblock title %}
+
+{% block content %}
+
+    <div class="row">
+
+        {% trans 'Главная' as main_trans %}
+
+        {% if tag %}
+
+            <section class="bredcrumbs">
+                <nav class="span12 path">
+                    <ul>
+                        {% url 'blog_list' as home_url %}
+                        {% breadcrumb_home home_url main_trans %}
+                        <li>{% trans 'Все записи с тегом' %} "{{ tag.name }}"</li>
+                    </ul>
+                </nav>
+            </section>
+
+        {% elif date_posts %}
+
+            <section class="bredcrumbs">
+                <nav class="span12 path">
+                    <ul>
+                        {% url 'blog_list' as home_url %}
+                        {% breadcrumb_home home_url main_trans %}
+                        <li>Опубликованные записи за "{{ date_posts }}.{{ current_datetime|date:"m" }}"</li>
+                    </ul>
+                </nav>
+            </section>
+
+        {% elif q %}
+
+            {% trans 'Поиск по запросу' as search_trans %}
+
+            <section class="bredcrumbs">
+                <nav class="span12 path">
+                    <ul>
+                        {% url 'blog_list' as home_url %}
+                        {% breadcrumb_home home_url main_trans %}
+                        {% if post_list %}
+                            <li>{{ search_trans }} "{{ q }}"</li>
+                        {% else %}
+                            <li>{{ search_trans }} "{{ q }}" {% trans 'ничего не найдено' %}</li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </section>
+
+            <p class="no-bradcrumbs"></p>
+
+        {% endif %}
+
+        <section class="span9">
+
+            {% for post in post_list %}
+
+                <article class="element-box">
+
+                    <header class="element-top-bar clearfix">
+                        <a href="{% url 'author_detail' post.author.id %}"
+                           class="user-info fl">{{ post.author }}</a>
+                        <b class="time-info fr">{{ post.publish }}</b>
+                    </header>
+
+                    <h2>
+                        <a href="{{ post.get_absolute_url }}">
+                            {{ post.title }}
+                        </a>
+                    </h2>
+
+                    <figure>
+                        <a href="#" class="show-image" title="This is image caption">
+                            <img src="{{ post.image.url }}" style="max_width:100%; height:auto" alt="image">
+                            <b class="zoom-icon"></b>
+                        </a>
+                    </figure>
+
+                    <p>
+                        {% trans 'Теги' %}:&nbsp
+                        {% for item in post.tagged_items.all %}
+                            {% with item.tag as tag %}
+                                <a href="{% url 'blog_list_by_tag' tag.slug %}">
+                                {{ tag.name }}
+                                </a>
+                            {% if not forloop.last %}, {% endif %}
+                            {% endwith %}
+                        {% endfor %}
+                    </p>
+
+                    <p>
+                        {{ post.body|safe|truncatewords:10 }}&nbsp
+                        <a href="{{ post.get_absolute_url }}"> {% trans 'подробнее' %}</a>
+                    </p>
+
+                    <footer class="element-bottom-bar">
+
+                        <ul>
+
+                            <li>
+                                <a href="{{ post.get_absolute_url }}" class="comment-icon">
+                                    <b>{{ post.ncomments}}</b>
+                                    {% if LANGUAGE_CODE == 'ru' %}
+                                        {{ post.ncomments|ru_plural:"Комментарий,Комментария,Комментариев" }}
+                                    {% else %}
+                                        Comment{{ post.ncomments|pluralize }}
+                                    {% endif %}
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="{% url 'category_list' %}">{{ post.category.name }}</a>
+                            </li>
+
+                            <li>
+                                {% if LANGUAGE_CODE == 'ru' %}
+                                    <div style="text-align: center;>" class="ya-share2"
+                                         data-curtain data-color-scheme="blackwhite"
+                                         data-limit="0" data-more-button-type="long"
+                                         data-title="{{ post.title }}"
+                                         data-url="{{ request.build_absolute_uri|share_url_format }}{{ post.get_absolute_url }}"
+                                         data-services="vkontakte,odnoklassniki,telegram">
+                                    </div>
+                                {% else %}
+                                    <div style="text-align: center;>" class="ya-share2"
+                                         data-curtain data-lang="en" data-color-scheme="blackwhite"
+                                         data-limit="0" data-more-button-type="long"
+                                         data-title="{{ post.title }}"
+                                         data-url="{{ request.build_absolute_uri|share_url_format }}{{ post.get_absolute_url }}"
+                                         data-services="vkontakte,odnoklassniki,telegram">
+                                    </div>
+                                {% endif %}
+                            </li>
+
+                        </ul>
+
+                    </footer>
+
+                </article> <!-- /.element-box [image]-->
+
+            {% endfor %}
+
+            {% include 'include/pagination.html' with page=post_list %}
+
+        </section>
+
+        {% include 'include/sidebar.html' %}
+
+    </div>
+
+{% endblock content %}

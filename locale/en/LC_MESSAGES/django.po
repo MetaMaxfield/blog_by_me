@@ -1,0 +1,250 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-10-25 06:01+0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: .\templates\404.html:11 .\templates\blog\category_list.html:11
+#: .\templates\blog\post_detail.html:11 .\templates\blog\post_list.html:6
+#: .\templates\blog\video_list.html:13 .\templates\include\footer.html:8
+#: .\templates\include\header.html:23 .\templates\pages\contact.html:9
+#: .\templates\users\author_detail.html:9 .\templates\users\author_list.html:10
+msgid "Главная"
+msgstr "Home"
+
+#: .\templates\404.html:12
+msgid "Ошибка 404"
+msgstr "404 Error"
+
+#: .\templates\404.html:28
+msgid "ошибка"
+msgstr "error"
+
+#: .\templates\404.html:32
+msgid "Страница не существует"
+msgstr "Page doesn't exist"
+
+#: .\templates\404.html:37
+msgid "Вернуться на главную"
+msgstr "Return to main page"
+
+#: .\templates\blog\category_list.html:3 .\templates\blog\category_list.html:12
+#: .\templates\include\footer.html:14 .\templates\include\header.html:29
+msgid "Категории"
+msgstr "Categories"
+
+#: .\templates\blog\post_detail.html:48 .\templates\blog\post_list.html:70
+msgid "Теги"
+msgstr "Tags"
+
+#: .\templates\blog\post_detail.html:77
+msgid "Вы выбрали оценку"
+msgstr "You have chosen the rating"
+
+#: .\templates\blog\post_detail.html:80
+msgid "Как вы оцениваете данный пост?"
+msgstr "How do you rate this post?"
+
+#: .\templates\blog\post_detail.html:120
+msgid "Добавить комментарий"
+msgstr "Add a comment"
+
+#: .\templates\blog\post_detail.html:127 .\templates\pages\contact.html:52
+msgid "Имя"
+msgstr "Name"
+
+#: .\templates\blog\post_detail.html:137
+msgid "Комментарий"
+msgstr "Comment"
+
+#: .\templates\blog\post_detail.html:141 .\templates\pages\contact.html:71
+msgid "Отправить"
+msgstr "Send"
+
+#: .\templates\blog\post_detail.html:171
+msgid "Ответить"
+msgstr "Answer"
+
+#: .\templates\blog\post_list.html:13
+msgid "Все записи с тегом"
+msgstr "All posts with tag"
+
+#: .\templates\blog\post_list.html:28
+msgid "Поиск по запросу"
+msgstr "Search by request"
+
+#: .\templates\blog\post_list.html:37
+msgid "ничего не найдено"
+msgstr "no results found"
+
+#: .\templates\blog\post_list.html:81
+msgid "подробнее"
+msgstr "read more"
+
+#: .\templates\blog\video_list.html:3 .\templates\blog\video_list.html:14
+#: .\templates\include\footer.html:11 .\templates\include\header.html:26
+msgid "Видео"
+msgstr "Video"
+
+#: .\templates\include\footer.html:17 .\templates\include\header.html:32
+#: .\templates\users\author_detail.html:10 .\templates\users\author_list.html:3
+#: .\templates\users\author_list.html:11
+msgid "Авторы"
+msgstr "Authors"
+
+#: .\templates\include\footer.html:20 .\templates\include\header.html:35
+#: .\templates\pages\contact.html:3 .\templates\pages\contact.html:10
+msgid "О проекте"
+msgstr "About project"
+
+#: .\templates\include\footer.html:23 .\templates\include\header.html:38
+msgid "Язык"
+msgstr "Language"
+
+#: .\templates\include\header.html:9
+msgid "Мой демонстрационный веб-проект"
+msgstr "My Demo Web Project"
+
+#: .\templates\include\header.html:19
+msgid "Меню"
+msgstr "Menu"
+
+#: .\templates\include\header.html:62
+msgid "Поиск"
+msgstr "Search"
+
+#: .\templates\include\tags\all_tags.html:4
+msgid "Популярные теги"
+msgstr "Popular tags"
+
+#: .\templates\include\tags\calendar.html:14
+msgid "Понедельник"
+msgstr "Monday"
+
+#: .\templates\include\tags\calendar.html:14
+msgid "Пн"
+msgstr "Mon"
+
+#: .\templates\include\tags\calendar.html:15
+msgid "Вторник"
+msgstr "Tuesday"
+
+#: .\templates\include\tags\calendar.html:15
+msgid "Вт"
+msgstr "Tue"
+
+#: .\templates\include\tags\calendar.html:16
+msgid "Среда"
+msgstr "Wednesday"
+
+#: .\templates\include\tags\calendar.html:16
+msgid "Ср"
+msgstr "Wed"
+
+#: .\templates\include\tags\calendar.html:17
+msgid "Четверг"
+msgstr "Thursday"
+
+#: .\templates\include\tags\calendar.html:17
+msgid "Чт"
+msgstr "Thu"
+
+#: .\templates\include\tags\calendar.html:18
+msgid "Пятница"
+msgstr "Friday"
+
+#: .\templates\include\tags\calendar.html:18
+msgid "Пт"
+msgstr "Fri"
+
+#: .\templates\include\tags\calendar.html:19
+msgid "Суббота"
+msgstr "Saturday"
+
+#: .\templates\include\tags\calendar.html:19
+msgid "Сб"
+msgstr "Sat"
+
+#: .\templates\include\tags\calendar.html:20
+msgid "Воскресенье"
+msgstr "Sunday"
+
+#: .\templates\include\tags\calendar.html:20
+msgid "Вс"
+msgstr "Sun"
+
+#: .\templates\include\tags\last_posts.html:4
+msgid "Последние записи"
+msgstr "Latest Posts"
+
+#: .\templates\include\tags\top_posts.html:4
+msgid "Топ посты"
+msgstr "Top Posts"
+
+#: .\templates\pages\contact.html:35
+msgid "Контактные данные"
+msgstr "Contact details"
+
+#: .\templates\pages\contact.html:47
+msgid "Связь с нами"
+msgstr "Contact us"
+
+#: .\templates\pages\contact.html:62
+msgid "Телефон"
+msgstr "Phone number"
+
+#: .\templates\pages\contact.html:67
+msgid "Сообщение"
+msgstr "Message"
+
+#: .\templates\users\author_detail.html:40
+msgid "Администратор"
+msgstr "Administrator"
+
+#: .\templates\users\author_detail.html:57
+msgid "В команде с"
+msgstr "Teamed with"
+
+#: .\templates\users\author_detail.html:61
+msgid "Возраст"
+msgstr "Age"
+
+#: .\templates\users\author_detail.html:70
+#: .\templates\users\author_detail.html:78
+msgid "Неизвестно"
+msgstr "Unknown"
+
+#: .\templates\users\author_detail.html:82
+msgid "Количество постов"
+msgstr "Post count"
+
+#: .\templates\users\author_detail.html:86
+msgid "Количество лайков к постам"
+msgstr "Number of likes for posts"
+
+#: .\templates\users\author_detail.html:102
+msgid "Последние опубликованные посты"
+msgstr "Last published posts"
+
+#: .\templates\users\author_detail.html:139
+msgid "Автор пока не добавил ни одного поста"
+msgstr "The author has not added any posts yet"
+
+#: .\templates\users\author_list.html:24
+msgid "Познакомьтесь с нашей командой"
+msgstr "Meet our team"
+
+

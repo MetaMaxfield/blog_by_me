@@ -1,0 +1,65 @@
+{% load i18n %}
+
+<footer class="main-footer">
+
+    <div class="container">
+
+        <div class="row">
+
+            <nav class="footer-nav span8">
+
+                <ul>
+
+                    <li>
+                        <a href="{% url 'blog_list' %}">{% trans 'Главная' %}</a>
+                    </li>
+
+                    <li>
+                        <a href="{% url 'video_list' %}">{% trans 'Видео' %}</a>
+                    </li>
+
+                    <li>
+                        <a href="{% url 'category_list' %}">{% trans 'Категории' %}</a>
+                    </li>
+
+                    <li>
+                        <a href="{% url 'author_list' %}">{% trans 'Авторы' %}</a>
+                    </li>
+
+                    <li>
+                        <a href="{% url 'contact' %}">{% trans 'О проекте' %}</a>
+                    </li>
+
+                    <li>
+
+                        <form action="{% url 'set_language' %}" method="post">{% csrf_token %}
+
+                            <input name="next" type="hidden" value="{{ redirect_to }}">
+
+                            <select name="language" onchange="this.form.submit()">
+
+                                {% get_available_languages as LANGUAGES %}
+                                {% get_language_info_list for LANGUAGES as languages %}
+
+                                {% for language in languages %}
+                                    <option value="{{ language.code }}"
+                                            {% if language.code == LANGUAGE_CODE %} selected {% endif %}>
+                                        {{ language.name_local }}
+                                    </option>
+                                {% endfor %}
+
+                            </select>
+
+                        </form>
+
+                    </li>
+
+                </ul>
+
+            </nav>
+
+        </div> <!-- ./row -->
+
+    </div> <!-- /.container -->
+
+</footer>

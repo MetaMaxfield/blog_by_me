@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% load common_tag breadcrumbs i18n %}
+
+{% block title %}{% trans 'Категории' %}{% endblock %}
+
+{% block content %}
+    <div class="row">
+
+        <section class="bredcrumbs">
+
+            <nav class="span12 path">
+                <ul>
+                    {% trans 'Главная' as main_trans %}
+                    {% trans 'Категории' as categories_trans %}
+                    {% url 'blog_list' as home_url %}
+                    {% breadcrumb_home home_url main_trans %}
+                    {% url 'category_list' as categories_url %}
+                    {% breadcrumb_active categories_url categories_trans 2 %}
+                </ul>
+            </nav>
+
+        </section> <!-- /.row [breadcrumbs] -->
+
+        <section id="masonry-box" class="categories-box">
+
+            <div class="span12 filter-bar element-box">
+
+                <ul class="filter-buttons">
+
+                    {% for category in categories %}
+                        <li>
+                            <input type="checkbox" class="filter-helper"
+                                   name="{{ category.name }}"
+                                   id="{{ category.name }}">
+                            <label for="{{ category.name }}">
+                                <b></b> {{ category.name }}
+                            </label>
+                        </li>
+                    {% endfor %}
+
+                </ul>
+
+                <div class="cat-switcher">
+                    <input type="checkbox" class="switcher-helper"
+                           name="cat-switcher" id="cat-switcher">
+                    <label for="cat-switcher">
+                        <b>&#9783;</b>
+                        <b>&#8801;</b>
+                    </label>
+                </div>
+
+            </div>
+
+            {% for post in posts %}
+
+                <article class="element-box filter-item span4 masonry-item"
+                         data-filter="{{ post.category.name }}">
+
+                    <header class="element-top-bar clearfix">
+                        <a href="" class="user-info fl">{{ post.author }}</a>
+                        <b class="time-info fr">{{ post.publish|date:"d M Y" }}</b>
+                    </header>
+
+                    <h2>
+                        <a href="{{ post.get_absolute_url }}">
+                            {{ post.title }}
+                        </a>
+                    </h2>
+
+                    <figure>
+                        <a href="{{ post.get_absolute_url }}">
+                            <img src="{{ post.image.url }}" alt="image">
+                            <b class="zoom-icon"></b>
+                        </a>
+                    </figure>
+
+                    <p>{{ post.body|safe|truncatewords:10 }}</p>
+
+                    <p>
+                        {% trans 'Теги' %}:&nbsp
+                        {% for item in post.tagged_items.all %}
+                            {% with item.tag as tag %}
+                                <a href="{% url 'blog_list_by_tag' tag.slug %}">
+                                {{ tag.name }}
+                                </a>
+                            {% if not forloop.last %}, {% endif %}
+                            {% endwith %}
+                        {% endfor %}
+                    </p>
+
+                    <footer class="element-bottom-bar">
+
+                        <ul>
+
+                            <li>
+                                <a href="{{ post.get_absolute_url }}" class="element-by-me">
+                                    <b>{{ post.ncomments }}</b>
+                                    {% if LANGUAGE_CODE == 'ru' %}
+                                        {{ post.ncomments|ru_plural:"Комментарий,Комментария,Комментариев" }}
+                                    {% else %}
+                                        Comment{{ post.ncomments|pluralize }}
+                                    {% endif %}
+                                </a>
+                            </li>
+
+                            <li>
+                                    <a href="#">{{ post.category.name }}</a>
+                            </li>
+
+                            <li>
+                                <div style="text-align: center;>" class="ya-share2"
+                                     data-curtain data-color-scheme="blackwhite"
+                                     data-limit="0" data-more-button-type="short" data-title="{{ post.title }}"
+                                     data-url="{{ request.build_absolute_uri|share_url_format }}{{ post.get_absolute_url }}"
+                                     data-services="vkontakte,odnoklassniki,telegram">
+                                </div>
+                            </li>
+
+                        </ul>
+
+                    </footer>
+
+                </article> <!-- /.element-box [image] /.span4-->
+
+            {% endfor %}
+
+        </section> <!-- /#masonry-box -->
+
+    </div> <!-- /.row -->
+
+    <!--<div class="row">-->
+        <!--<div class="span4 offset4">-->
+            <!--<a class="button button-load large-button">Показать ещё</a>-->
+        <!--</div>-->
+    <!--</div> &lt;!&ndash; /.row &ndash;&gt;-->
+
+{% endblock content %}

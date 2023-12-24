@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% load breadcrumbs common_tag i18n %}
+
+{% block title %}{% trans 'Авторы' %}{% endblock title %}
+
+{% block content %}
+
+    <section class="bredcrumbs">
+
+        <nav class="span12 path">
+
+            <ul>
+                {% trans 'Главная' as main_trans %}
+                {% trans 'Авторы' as authors_trans %}
+                {% url 'blog_list' as home_url %}
+                {% breadcrumb_home home_url main_trans %}
+                {% url 'author_list' as authors_url %}
+                {% breadcrumb_active authors_url authors_trans 2 %}
+            </ul>
+
+        </nav>
+
+    </section> <!-- /.row [breadcrumbs] -->
+
+    <section class="row">
+
+        <div class="span12 page-intro">
+            <h1>{% trans 'Познакомьтесь с нашей командой' %}</h1>
+        </div>
+
+        {% for author in authors %}
+
+            <div class="span3 element-box members-section">
+
+                <figure>
+                    <a href="{% url 'author_detail' author.id %}">
+                        <img src="{{ author.get_image_url }}" alt="member">
+                    </a>
+                </figure>
+
+                <h3>
+                    <a href="{% url 'author_detail' author.id %}">{{ author.username }}</a>
+                </h3>
+
+                <hr class="fantastico">
+
+                <p>
+                    {{ author.description|truncatewords:10 }}
+                </p>
+
+                <div class="member-social colored-red">
+
+                    <ul class="member-social">
+
+                        <li>
+                            <div class="ya-share2" data-curtain data-shape="round"
+                                 data-url="{{ request.build_absolute_uri|share_url_format }}{% url 'author_detail' author.id %}"
+                                 data-color-scheme="blackwhite" data-title="{{ author.username }}"
+                                 data-services="vkontakte,odnoklassniki,telegram">
+                            </div>
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+    </section><!-- /.row -->
+
+{% endblock content %}

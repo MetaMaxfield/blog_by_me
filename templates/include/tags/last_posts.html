@@ -1,0 +1,30 @@
+{% load i18n %}
+
+<div class="sidebar-element">
+
+    <h3>{% trans 'Последние записи' %}</h3>
+
+    <ul class="recent-posts">
+
+        {% for post in last_posts %}
+
+            <li class="row-fluid">
+
+                <figure class="span4">
+                    <a href="{{ post.get_absolute_url }}">
+                        <img src="{{ post.image.url }}" style="heigth:60px; width:60px" alt="image">
+                    </a>
+                </figure>
+
+                <div class="span8">
+                    <h4><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h4>
+                    <p>{{ post.body|safe|truncatewords:5 }}</p>
+                </div>
+
+            </li>
+
+        {% endfor %}
+
+    </ul>
+
+</div><!-- /.sidebar-element -->

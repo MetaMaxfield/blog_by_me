@@ -1,7 +1,9 @@
-![gif-logo]()
+![gif-logo](https://github.com/MetaMaxfield/blog_by_me/raw/master/Blog-by-Me.gif)
 
-![logo]()
-#  Блог "MAXFIELD"
+<h1>
+    <img align="left" src='https://github.com/MetaMaxfield/blog_by_me/raw/master/static/img/site_logo.png?raw=true' width="53.5" height="48.72" alt="logo">
+    Блог "MAXFIELD"
+</h1>
 
 ![Static Badge](https://img.shields.io/badge/Python-3.11-blue?logo=python&labelColor=black)
 ![Static Badge](https://img.shields.io/badge/Django-4.2-lightgrey?logo=Django&labelColor=darkgreen)

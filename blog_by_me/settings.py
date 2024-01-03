@@ -220,9 +220,11 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
 
-# Ключи для работы reCAPTCHA
-RECAPTCHA_PUBLIC_KEY = os.getenv('ENV_RECAPTCHA_PUBLIC_KEY')
-RECAPTCHA_PRIVATE_KEY = os.getenv('ENV_RECAPTCHA_PRIVATE_KEY')
+# Проверка наличия файла .env для первого запуска интерпретатора Python и генерации SECRET_KEY
+if os.path.isfile(os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env')):
+    # Ключи для работы reCAPTCHA
+    RECAPTCHA_PUBLIC_KEY = os.getenv('ENV_RECAPTCHA_PUBLIC_KEY')
+    RECAPTCHA_PRIVATE_KEY = os.getenv('ENV_RECAPTCHA_PRIVATE_KEY')
 
 
 # Путь к каталогу загрузки мультимедиа CKEditor

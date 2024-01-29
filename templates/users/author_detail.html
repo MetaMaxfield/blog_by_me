@@ -49,7 +49,7 @@
                             {% endif %}
 
                             {% for group in author.get_user_groups %}
-                                <span class="label colored-green">{{ group }}</span>
+                                <span class="label colored-green">{% trans group %}</span>
                             {% endfor %}
 
                         </a>

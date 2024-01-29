@@ -247,4 +247,11 @@ msgstr "The author has not added any posts yet"
 msgid "Познакомьтесь с нашей командой"
 msgstr "Meet our team"
 
+#: .\templates\users\author_detail.html:52
+msgid "Автор"
+msgstr "Author"
+
+#: .\templates\users\author_detail.html:52
+msgid "Модератор"
+msgstr "Moderator"
 

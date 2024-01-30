@@ -64,6 +64,7 @@ class CustomUserAdmin(UserAdmin, TranslationAdmin):
         if request.user.is_superuser:
             return fieldsets
         elif request.user.id == obj.id:
+            fieldsets[0][1]['fields'] = ['username', 'password']
             fieldsets.pop(2)
             return fieldsets
         else:

@@ -31,7 +31,7 @@ def _qs_post_list():
 
 def _qs_post_detail(slug):
     """Отдельная запись в блоге"""
-    return get_object_or_404(Post.objects.select_related('author').annotate(
+    return get_object_or_404(Post.objects.filter(draft=False).select_related('author').annotate(
         ncomments=Count('comments')), url=slug)
 
 

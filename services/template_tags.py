@@ -1,8 +1,14 @@
+import datetime
 from re import split, search
+from django.db.models import QuerySet
+from phonenumber_field.phonenumber import PhoneNumber
 from blog_by_me.settings import CURRENT_DATETIME
 
 
-def service_ru_plural(value, variants):
+def service_ru_plural(
+        value: int,
+        variants: str
+) -> str:
     """Логика изменения окончания слова в зависимости от количества"""
     variants = variants.split(',')
     value = abs(int(value))
@@ -16,32 +22,30 @@ def service_ru_plural(value, variants):
     return variants[variant]
 
 
-def service_share_url_format(url):
+def service_share_url_format(url: str) -> str:
     """Логика работы форматирования URL адреса для блока "Поделиться"""
     if search(r'/[\w?%=/]+$', url):
-        result, _ = split(r'/[\w?%=/]+$', url)
-        return result
-    else:
-        return url
+        url, _ = split(r'/[\w?%=/]+$', url)
+    return url
 
 
-def add_posts_days_in_list(qs_calendar):
+def add_posts_days_in_list(qs_calendar: QuerySet) -> set[int]:
     """Добавление в список дней, в которые публиковались посты"""
     posts_days = []
-    [posts_days.append(*x) for x in qs_calendar]
-    return posts_days
+    for day in qs_calendar:
+        posts_days.extend(day)
+    return set(posts_days)
 
 
-def service_age_tag(birthday):
+def service_age_tag(birthday: datetime.date) -> int:
     """Логика расчёта возраста пользователя"""
     today = CURRENT_DATETIME.date()
-    result = (today.year - birthday.year)
-    if birthday.month >= today.month and birthday.day > today.day:
-        result -= 1
-    return result
+    return today.year - birthday.year - (
+            (today.month, today.day) < (birthday.month, birthday.day)
+    )
 
 
-def service_format_phone_num(num):
+def service_format_phone_num(num: PhoneNumber) -> str:
     """Логика форматирования номера телефона для шаблона"""
     num = str(num)
     return f'{num[0:2]} ({num[2:5]}) {num[5:8]}-{num[8:10]}-{num[10:12]}'

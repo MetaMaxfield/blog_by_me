@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-def send(user_mail):
+def send(user_mail: str) -> None:
     """Отправка электронного письма при получении обратной связи через форму"""
     send_mail(
         'Запрос к администрации веб-приложения MAXFIELD.',

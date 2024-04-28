@@ -1,4 +1,4 @@
-from typing import Tuple, Optional
+from typing import Tuple
 from django.contrib.postgres.search import SearchRank, SearchVector, SearchQuery
 from django.db.models import QuerySet
 from django.shortcuts import get_object_or_404
@@ -6,26 +6,32 @@ from taggit.models import Tag
 from blog_by_me.settings import CURRENT_DATETIME
 
 
-def search_by_date_or_tag(
-        date_posts: int | None,
-        tag_slug: str | None,
+def search_by_tag(
+        tag_slug: str,
         object_list: QuerySet
-) -> Tuple[Optional[Tag], QuerySet]:
+) -> Tuple[Tag, QuerySet]:
     """
-    Функция валидирует записи по тегу или дате,
-    а также возвращает текущую дату
+    Функция валидирует записи по тегу,
+    а также возвращает заданный тег
     """
-    tag = None
-    if date_posts:
-        object_list = object_list.filter(
-            created__year=CURRENT_DATETIME.year,
-            created__month=CURRENT_DATETIME.month,
-            created__day=date_posts,
-        )
-    if tag_slug:
-        tag = get_object_or_404(Tag, slug=tag_slug)
-        object_list = object_list.filter(tags__in=[tag])
+    tag = get_object_or_404(Tag, slug=tag_slug)
+    object_list = object_list.filter(tags__in=[tag])
     return tag, object_list
+
+
+def search_by_date(
+        date_posts: int,
+        object_list: QuerySet
+) -> QuerySet:
+    """
+    Функция валидирует записи по дате
+    """
+    object_list = object_list.filter(
+        created__year=CURRENT_DATETIME.year,
+        created__month=CURRENT_DATETIME.month,
+        created__day=date_posts,
+    )
+    return object_list
 
 
 def search_by_q(

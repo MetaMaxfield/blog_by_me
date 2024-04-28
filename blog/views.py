@@ -20,18 +20,40 @@ class PostsView(View):
     def get(
             self,
             request: HttpRequest,
-            date_posts: int | None = None,
-            tag_slug: str | None = None
     ) -> HttpResponse:
         object_list = get_cached_objects_or_queryset(os.getenv('KEY_POSTS_LIST'))
-        tag, object_list = search.search_by_date_or_tag(date_posts, tag_slug, object_list)
         paginator, post_list = create_pagination(request, object_list)
         return render(request, 'blog/post_list.html', {'post_list': post_list,
-                                                       'tag': tag,
+                                                       'paginator': paginator})
+
+
+class PostsFilterDateView(View):
+    def get(
+            self,
+            request: HttpRequest,
+            date_posts: int
+    ) -> HttpResponse:
+        object_list = get_cached_objects_or_queryset(os.getenv('KEY_POSTS_LIST'))
+        object_list = search.search_by_date(date_posts, object_list)
+        paginator, post_list = create_pagination(request, object_list)
+        return render(request, 'blog/post_list.html', {'post_list': post_list,
                                                        'date_posts': date_posts,
                                                        'current_datetime': CURRENT_DATETIME,
                                                        'paginator': paginator})
 
+
+class PostsFilterTagView(View):
+    def get(
+            self,
+            request: HttpRequest,
+            tag_slug: str
+    ) -> HttpResponse:
+        object_list = get_cached_objects_or_queryset(os.getenv('KEY_POSTS_LIST'))
+        tag, object_list = search.search_by_tag(tag_slug, object_list)
+        paginator, post_list = create_pagination(request, object_list)
+        return render(request, 'blog/post_list.html', {'post_list': post_list,
+                                                       'tag': tag,
+                                                       'paginator': paginator})
 
 class PostDetailView(View):
     """Пост"""

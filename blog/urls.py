@@ -7,10 +7,10 @@ urlpatterns = [
     path('', views.PostsView.as_view(), name='blog_list'),
 
     # Главная страница с фильтрацией по дате
-    path('date/<int:date_posts>/', views.PostsView.as_view(), name='blog_list_by_date'),
+    path('date/<int:date_posts>/', views.PostsFilterDateView.as_view(), name='blog_list_by_date'),
 
     # Главная страница с фильтрацией по тегу
-    path('tag/<slug:tag_slug>/', views.PostsView.as_view(), name='blog_list_by_tag'),
+    path('tag/<slug:tag_slug>/', views.PostsFilterTagView.as_view(), name='blog_list_by_tag'),
 
     # Главная страница с поиском по пользовательскому запросу
     path('search/', views.SearchView.as_view(), name='search'),

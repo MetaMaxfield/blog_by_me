@@ -2,8 +2,9 @@ import os
 from django.http import StreamingHttpResponse, HttpResponse, HttpRequest, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.views import View
+from django.views.generic import ListView
 from dotenv import load_dotenv
-from blog_by_me.settings import CURRENT_DATETIME
+from blog_by_me.settings import CURRENT_DATETIME, COUNT_POSTS_ON_PAGE
 from services.blog.paginator import create_pagination
 from services.blog.video_player import open_file
 from services import client_ip, rating, search, validator
@@ -15,19 +16,33 @@ from services.caching import get_cached_objects_or_queryset
 load_dotenv()
 
 
-class PostsView(View):
-    """Посты блога"""
-    def get(
-            self,
-            request: HttpRequest,
-    ) -> HttpResponse:
-        object_list = get_cached_objects_or_queryset(os.getenv('KEY_POSTS_LIST'))
-        paginator, post_list = create_pagination(request, object_list)
-        return render(request, 'blog/post_list.html', {'post_list': post_list,
-                                                       'paginator': paginator})
+# class PostsView(View):
+#     """Посты блога"""
+#     def get(
+#             self,
+#             request: HttpRequest,
+#     ) -> HttpResponse:
+#         object_list = get_cached_objects_or_queryset(os.getenv('KEY_POSTS_LIST'))
+#         paginator, post_list = create_pagination(request, object_list)
+#         return render(request, 'blog/post_list.html', {'post_list': post_list,
+#                                                        'paginator': paginator})
+
+
+class PostsView(ListView):
+    queryset = get_cached_objects_or_queryset(os.getenv('KEY_POSTS_LIST'))
+    paginate_by = COUNT_POSTS_ON_PAGE
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['post_list'] = context['page_obj']
+        del context['page_obj']
+
+        return context
 
 
 class PostsFilterDateView(View):
+    """Посты блога с фильтрацией по дате"""
     def get(
             self,
             request: HttpRequest,
@@ -43,6 +58,7 @@ class PostsFilterDateView(View):
 
 
 class PostsFilterTagView(View):
+    """Посты блога с фильтрацией по тегу"""
     def get(
             self,
             request: HttpRequest,

@@ -322,3 +322,7 @@ CURRENT_DATETIME = timezone.now()
 
 # Аннотация типа данных
 T = TypeVar('T', bound='django.db.models.base.Model')
+
+
+# Количество постов на странице
+COUNT_POSTS_ON_PAGE = 3

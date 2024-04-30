@@ -77,19 +77,40 @@ class PostsFilterDateView(ListView):
         return context
 
 
-class PostsFilterTagView(View):
-    """Посты блога с фильтрацией по тегу"""
-    def get(
-            self,
-            request: HttpRequest,
-            tag_slug: str
-    ) -> HttpResponse:
-        object_list = get_cached_objects_or_queryset(os.getenv('KEY_POSTS_LIST'))
-        tag, object_list = search.search_by_tag(tag_slug, object_list)
-        paginator, post_list = create_pagination(request, object_list)
-        return render(request, 'blog/post_list.html', {'post_list': post_list,
-                                                       'tag': tag,
-                                                       'paginator': paginator})
+# class PostsFilterTagView(View):
+#     """Посты блога с фильтрацией по тегу"""
+#     def get(
+#             self,
+#             request: HttpRequest,
+#             tag_slug: str
+#     ) -> HttpResponse:
+#         object_list = get_cached_objects_or_queryset(os.getenv('KEY_POSTS_LIST'))
+#         tag, object_list = search.search_by_tag(tag_slug, object_list)
+#         paginator, post_list = create_pagination(request, object_list)
+#         return render(request, 'blog/post_list.html', {'post_list': post_list,
+#                                                        'tag': tag,
+#                                                        'paginator': paginator})
+
+
+class PostsFilterTagView(ListView):
+    queryset = get_cached_objects_or_queryset(os.getenv('KEY_POSTS_LIST'))
+    paginate_by = COUNT_POSTS_ON_PAGE
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        tag, queryset = search.search_by_tag(self.kwargs['tag_slug'], queryset)
+        self.kwargs['tag'] = tag
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['tag'] = self.kwargs['tag']
+
+        context['post_list'] = context['page_obj']
+        del context['page_obj']
+
+        return context
 
 class PostDetailView(View):
     """Пост"""

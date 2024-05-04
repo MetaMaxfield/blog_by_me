@@ -213,15 +213,19 @@ class SearchView(ListView):
         return context
 
 
-class VideosView(View):
-    """Видеозаписи блога"""
+# class VideosView(View):
+#     """Видеозаписи блога"""
+#
+#     def get(
+#             self,
+#             request: HttpRequest
+#     ) -> HttpResponse:
+#         video_list = get_cached_objects_or_queryset(os.getenv('KEY_VIDEOS_LIST'))
+#         return render(request, 'blog/video_list.html', {'video_list': video_list})
 
-    def get(
-            self,
-            request: HttpRequest
-    ) -> HttpResponse:
-        video_list = get_cached_objects_or_queryset(os.getenv('KEY_VIDEOS_LIST'))
-        return render(request, 'blog/video_list.html', {'video_list': video_list})
+
+class VideosView(ListView):
+    queryset = get_cached_objects_or_queryset(os.getenv('KEY_VIDEOS_LIST')) # todo: узнать про video_list и object_list
 
 
 class VideoPlayView(View):

@@ -1,8 +1,11 @@
 import os
+
+from django.db.models import Count
+
 from django.http import StreamingHttpResponse, HttpResponse, HttpRequest, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.views import View
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 from dotenv import load_dotenv
 from blog_by_me.settings import CURRENT_DATETIME, COUNT_POSTS_ON_PAGE
 from services.blog.paginator import create_pagination
@@ -112,25 +115,35 @@ class PostsFilterTagView(ListView):
         return context
 
 
-class PostDetailView(View):
-    """Пост"""
+# class PostDetailView(View):
+#     """Пост"""
+#
+#     def get(
+#             self,
+#             request: HttpRequest,
+#             slug: str
+#     ) -> HttpResponse:
+#         post = get_cached_objects_or_queryset(os.getenv('KEY_POST_DETAIL'), slug)
+#         selected = validator.validator_selected_rating(client_ip.get_client_ip(request), post)
+#         return render(request, 'blog/post_detail.html',
+#                       {'post': post,
+#                        'form': CommentsForm(),
+#                        'rating_form': RatingForm(),
+#                        'selected': selected})
 
-    def get(
-            self,
-            request: HttpRequest,
-            slug: str
-    ) -> HttpResponse:
-        post = get_cached_objects_or_queryset(os.getenv('KEY_POST_DETAIL'), slug)
-        form = CommentsForm()
-        rating_form = RatingForm()
-        received_ip = client_ip.get_client_ip(request)
-        selected = validator.validator_selected_rating(received_ip, post)
-        return render(request, 'blog/post_detail.html',
-                      {'post': post,
-                       'form': form,
-                       'rating_form': rating_form,
-                       'selected': selected}
-                      )
+
+class PostDetailView(DetailView):
+    def get_object(self, **kwargs):
+        return get_cached_objects_or_queryset(os.getenv('KEY_POST_DETAIL'), self.kwargs['slug'])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = CommentsForm()
+        context['rating_form'] = RatingForm
+        context['selected'] = validator.validator_selected_rating(
+            client_ip.get_client_ip(self.request), context['post']
+        )
+        return context
 
 
 class CommentsView(View):
@@ -205,7 +218,7 @@ class SearchView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        context['q'] = self.kwargs['q'] # todo: по возможности улучшить код
+        context['q'] = self.kwargs['q'] # todo: по возможности улучшить код (self)
 
         context['post_list'] = context['page_obj']
         del context['page_obj']
@@ -225,7 +238,7 @@ class SearchView(ListView):
 
 
 class VideosView(ListView):
-    queryset = get_cached_objects_or_queryset(os.getenv('KEY_VIDEOS_LIST')) # todo: узнать про video_list и object_list
+    queryset = get_cached_objects_or_queryset(os.getenv('KEY_VIDEOS_LIST'))
 
 
 class VideoPlayView(View):

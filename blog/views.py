@@ -150,15 +150,25 @@ class CommentsView(View):
         return redirect(post.get_absolute_url())
 
 
-class CategoryView(View):
-    """Категории"""
-    def get(
-            self,
-            request: HttpRequest
-    ) -> HttpResponse:
-        categories = get_cached_objects_or_queryset(os.getenv('KEY_CATEGORIES_LIST'))
-        posts = get_cached_objects_or_queryset(os.getenv('KEY_POSTS_LIST'))
-        return render(request, 'blog/category_list.html', {'categories': categories, 'posts': posts})
+# class CategoryView(View):
+#     """Категории"""
+#     def get(
+#             self,
+#             request: HttpRequest
+#     ) -> HttpResponse:
+#         categories = get_cached_objects_or_queryset(os.getenv('KEY_CATEGORIES_LIST'))
+#         posts = get_cached_objects_or_queryset(os.getenv('KEY_POSTS_LIST'))
+#         return render(request, 'blog/category_list.html', {'categories': categories, 'posts': posts})
+
+
+class CategoryView(ListView):
+    queryset = get_cached_objects_or_queryset(os.getenv('KEY_CATEGORIES_LIST'))
+    context_object_name = 'categories'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['posts'] = get_cached_objects_or_queryset(os.getenv('KEY_POSTS_LIST'))
+        return context
 
 
 # class SearchView(View):

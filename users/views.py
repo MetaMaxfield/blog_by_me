@@ -2,7 +2,7 @@ import os
 from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render
 from django.views import View
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 from dotenv import load_dotenv
 from services.caching import get_cached_objects_or_queryset
 
@@ -25,12 +25,20 @@ class AuthorsView(ListView):
     template_name = 'users/author_list.html'
 
 
-class AuthorDetailView(View):
-    def get(
-            self,
-            request: HttpRequest,
-            pk: int
-    ) -> HttpResponse:
-        user = get_cached_objects_or_queryset(os.getenv('KEY_AUTHOR_DETAIL'), pk)
-        return render(request, 'users/author_detail.html', {'author': user})
+# class AuthorDetailView(View):
+#     def get(
+#             self,
+#             request: HttpRequest,
+#             pk: int
+#     ) -> HttpResponse:
+#         user = get_cached_objects_or_queryset(os.getenv('KEY_AUTHOR_DETAIL'), pk)
+#         return render(request, 'users/author_detail.html', {'author': user})
+
+
+class AuthorDetailView(DetailView):
+    context_object_name = 'author'
+    template_name = 'users/author_detail.html'
+
+    def get_object(self, **kwargs):
+        return get_cached_objects_or_queryset(os.getenv('KEY_AUTHOR_DETAIL'), self.kwargs['pk'])
     

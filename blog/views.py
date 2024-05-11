@@ -1,9 +1,7 @@
 import os
-
 from django.db.models import Count
-
 from django.http import StreamingHttpResponse, HttpResponse, HttpRequest, HttpResponseRedirect
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect, render
 from django.views import View
 from django.views.generic import ListView, DetailView
 from dotenv import load_dotenv
@@ -14,6 +12,7 @@ from services import client_ip, rating, search, validator
 from .models import Post
 from .forms import CommentsForm, RatingForm
 from services.caching import get_cached_objects_or_queryset
+
 
 load_dotenv()
 
@@ -31,15 +30,13 @@ load_dotenv()
 
 
 class PostsView(ListView):
+    """Посты блога"""
     queryset = get_cached_objects_or_queryset(os.getenv('KEY_POSTS_LIST'))
     paginate_by = COUNT_POSTS_ON_PAGE
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         context['post_list'] = context['page_obj']
-        del context['page_obj']
-
         return context
 
 
@@ -60,6 +57,7 @@ class PostsView(ListView):
 
 
 class PostsFilterDateView(ListView):
+    """Посты блога с фильтрацией по дате"""
     queryset = get_cached_objects_or_queryset(os.getenv('KEY_POSTS_LIST'))
     paginate_by = COUNT_POSTS_ON_PAGE
 
@@ -69,13 +67,9 @@ class PostsFilterDateView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         context['current_datetime'] = CURRENT_DATETIME
         context['date_posts'] = self.kwargs['date_posts']
-
         context['post_list'] = context['page_obj']
-        del context['page_obj']
-
         return context
 
 
@@ -95,29 +89,24 @@ class PostsFilterDateView(ListView):
 
 
 class PostsFilterTagView(ListView):
+    """Посты блога с фильтрацией по тегу"""
     queryset = get_cached_objects_or_queryset(os.getenv('KEY_POSTS_LIST'))
     paginate_by = COUNT_POSTS_ON_PAGE
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        tag, queryset = search.search_by_tag(self.kwargs['tag_slug'], queryset)
-        self.kwargs['tag'] = tag
+        self.tag, queryset = search.search_by_tag(self.kwargs['tag_slug'], queryset)
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        context['tag'] = self.kwargs['tag']
-
+        context['tag'] = self.tag
         context['post_list'] = context['page_obj']
-        del context['page_obj']
-
         return context
 
 
 # class PostDetailView(View):
 #     """Пост"""
-#
 #     def get(
 #             self,
 #             request: HttpRequest,
@@ -133,6 +122,7 @@ class PostsFilterTagView(ListView):
 
 
 class PostDetailView(DetailView):
+    """Пост"""
     def get_object(self, **kwargs):
         return get_cached_objects_or_queryset(os.getenv('KEY_POST_DETAIL'), self.kwargs['slug'])
 
@@ -148,7 +138,6 @@ class PostDetailView(DetailView):
 
 class CommentsView(View):
     """Комментарии"""
-
     def post(
             self,
             request: HttpRequest,
@@ -167,7 +156,6 @@ class CommentsView(View):
 
 # class CategoryView(View):
 #     """Категории"""
-#
 #     def get(
 #             self,
 #             request: HttpRequest
@@ -178,6 +166,7 @@ class CommentsView(View):
 
 
 class CategoryView(ListView):
+    """Категории"""
     queryset = get_cached_objects_or_queryset(os.getenv('KEY_CATEGORIES_LIST'))
     context_object_name = 'categories'
 
@@ -189,7 +178,6 @@ class CategoryView(ListView):
 
 # class SearchView(View):
 #     """Поиск"""
-#
 #     def get(
 #             self,
 #             request: HttpRequest
@@ -205,30 +193,25 @@ class CategoryView(ListView):
 
 
 class SearchView(ListView):
+    """Поиск"""
     queryset = get_cached_objects_or_queryset(os.getenv('KEY_POSTS_LIST'))
     paginate_by = COUNT_POSTS_ON_PAGE
 
     def get_queryset(self):
-        q = self.request.GET.get('q')
+        self.q = self.request.GET.get('q')
         queryset = super().get_queryset()
-        self.kwargs['q'] = q
         current_language = self.request.LANGUAGE_CODE
-        return search.search_by_q(q, queryset, current_language)
+        return search.search_by_q(self.q, queryset, current_language)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        context['q'] = self.kwargs['q'] # todo: по возможности улучшить код (self)
-
+        context['q'] = self.q
         context['post_list'] = context['page_obj']
-        del context['page_obj']
-
         return context
 
 
 # class VideosView(View):
 #     """Видеозаписи блога"""
-#
 #     def get(
 #             self,
 #             request: HttpRequest
@@ -238,12 +221,12 @@ class SearchView(ListView):
 
 
 class VideosView(ListView):
+    """Видеозаписи блога"""
     queryset = get_cached_objects_or_queryset(os.getenv('KEY_VIDEOS_LIST'))
 
 
 class VideoPlayView(View):
     """Видеопроигрыватель"""
-
     def get(
             self,
             request: HttpRequest,
@@ -260,7 +243,6 @@ class VideoPlayView(View):
 
 class AddRatingView(View):
     """Рейтинг"""
-
     def post(
             self,
             request: HttpRequest

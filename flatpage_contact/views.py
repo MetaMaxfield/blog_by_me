@@ -17,11 +17,10 @@ class ExtensionFlatpageView(View):
             self,
             request: HttpRequest
     ) -> HttpResponse:
-        contact_flatpage = get_cached_objects_or_queryset(os.getenv('KEY_CONTACT_FLATPAGE'))
         return render(
             request, 'pages/contact.html', {
                 'form': ContactForm(),
-                'flatpage': contact_flatpage
+                'flatpage': get_cached_objects_or_queryset(os.getenv('KEY_CONTACT_FLATPAGE'))
             }
         )
 

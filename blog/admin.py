@@ -4,6 +4,7 @@ from django import forms
 from modeltranslation.admin import TranslationAdmin
 from .models import Post, Category, Comment, Video, Mark, Rating
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
+from blog_by_me.settings import TITLE_MODERATOR_GROUP
 
 
 # Зарегистрированная модель Comment для отображения в панели администрациии
@@ -58,7 +59,7 @@ class VideoAdmin(TranslationAdmin):
             return qs
         else:
             try:
-                request.user.groups.get(name='Модератор')
+                request.user.groups.get(name=TITLE_MODERATOR_GROUP)
                 return qs
             except:
                 return qs.filter(post_video__author=request.user)
@@ -123,7 +124,7 @@ class PostAdmin(TranslationAdmin):
             return qs
         else:
             try:
-                request.user.groups.get(name='Модератор')
+                request.user.groups.get(name=TITLE_MODERATOR_GROUP)
                 return qs
             except:
                 return qs.filter(author=request.user)
@@ -135,7 +136,7 @@ class PostAdmin(TranslationAdmin):
             return fieldsets
         else:
             try:
-                request.user.groups.get(name='Модератор')
+                request.user.groups.get(name=TITLE_MODERATOR_GROUP)
                 return fieldsets
             except:
                 fieldsets[1][1]['fields'] = ['category', ]

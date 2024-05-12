@@ -1,9 +1,10 @@
 from django.core.management import BaseCommand
 from django.contrib.auth.models import Group, Permission
+from blog_by_me.settings import TITLE_MODERATOR_GROUP, TITLE_AUTHOR_GROUP
 import logging
 
 GROUPS = {
-    'Автор': {
+    TITLE_AUTHOR_GROUP: {
         'Категория': ['add', 'change', 'view'],
         'Комментарий': ['view', ],
         'Пост': ['add', 'delete', 'change', 'view'],
@@ -15,7 +16,7 @@ GROUPS = {
         'tagged item': ['add', 'view'],
     },
 
-    'Модератор': {
+    TITLE_MODERATOR_GROUP: {
         'Категория': ['add', 'delete', 'change', 'view'],
         'Комментарий': ['add', 'delete', 'change', 'view'],
         'Пост': ['add', 'delete', 'change', 'view'],

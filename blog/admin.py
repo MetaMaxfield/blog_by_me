@@ -4,6 +4,7 @@ from django import forms
 from modeltranslation.admin import TranslationAdmin
 from .models import Post, Category, Comment, Video, Mark, Rating
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
+from blog_by_me.settings import TITLE_MODERATOR_GROUP
 
 
 # Зарегистрированная модель Comment для отображения в панели администрациии
@@ -52,13 +53,13 @@ class VideoAdmin(TranslationAdmin):
     search_fields = ('title',)
 
     def get_queryset(self, request):
-        # Получение видео из базы данных в зависимости от статуса пользователя
+        """Получение видео из базы данных в зависимости от статуса пользователя"""
         qs = super().get_queryset(request)
         if request.user.is_superuser:
             return qs
         else:
             try:
-                request.user.groups.get(name='Модератор')
+                request.user.groups.get(name=TITLE_MODERATOR_GROUP)
                 return qs
             except:
                 return qs.filter(post_video__author=request.user)
@@ -95,54 +96,61 @@ class PostAdmin(TranslationAdmin):
     inlines = [CommentInline, ]
     form = PostAdminForm
     fieldsets = (
-        ('Заголовок', {
-            'fields': ('title', )
-        }),
-        ('Категория', {
+        ['Заголовок', {
+            'fields': ('title',)
+        }],
+        ['Категория и автор', {
             'fields': ('category', 'author')
-        }),
-        ('Содержание', {
-            'fields': ('body', ('image', 'get_image', ), 'video', 'tags', )
-        }),
-        ('Настройки', {
-            'fields': (('draft', 'url'), )
-        }),
+        }],
+        ['Содержание', {
+            'fields': ('body', ('image', 'get_image',), 'video', 'tags',)
+        }],
+        ['Настройки', {
+            'fields': (('draft', 'url'),)
+        }],
     )
 
     def get_image(self, obj):
-        # Отображение изображения в панеле администрации
+        """Отображение изображения в панеле администрации"""
         if obj.image:
             return mark_safe(f'<img src={obj.image.url} width="100", height="100"')
         return 'Нет изображения'
     get_image.short_description = 'Изображение'
 
     def get_queryset(self, request):
-        # Получение постов из базы данных в зависимости от статуса пользователя
+        """
+        Получение постов из базы данных
+        в зависимости от статуса пользователя
+        """
         qs = super().get_queryset(request)
         if request.user.is_superuser:
             return qs
         else:
             try:
-                request.user.groups.get(name='Модератор')
+                request.user.groups.get(name=TITLE_MODERATOR_GROUP)
                 return qs
             except:
                 return qs.filter(author=request.user)
 
     def get_fieldsets(self, request, obj=None):
-        # Отображение полей в зависимости от статуса пользователя
-        fieldsets = super(PostAdmin, self).get_fieldsets(request, obj)
+        """Отображение полей в зависимости от статуса пользователя"""
+        fieldsets = super().get_fieldsets(request, obj)
         if request.user.is_superuser:
             return fieldsets
         else:
             try:
-                request.user.groups.get(name='Модератор')
+                request.user.groups.get(name=TITLE_MODERATOR_GROUP)
                 return fieldsets
             except:
-                fieldsets[1][1]['fields'] = ['category', ]
-                return fieldsets
+                fields = fieldsets.copy()
+                fields[1] = ['Категория', {'fields': ('category',)}]
+                return fields
 
     def save_model(self, request, obj, form, change):
-        # Приравнивание полю "Автор" текущего пользователя по умолчанию при сохранении поста
+        """
+        Приравнивание полю "Автор" текущего пользователя по умолчанию
+        при сохранении поста
+        """
         if not obj.author:
             obj.author = request.user
         super().save_model(request, obj, form, change)

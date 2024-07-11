@@ -36,6 +36,12 @@ class FlatpageContactAdmin(TranslationAdmin):
     """Плоская страница"""
     form = DescriptionAdminForm
     fieldsets = (
+        ('Местонахождение проекта', {
+            'description': 'Выбрать объект на карте -> Поделиться -> '
+                           'Встраивание карт -> Другой размер -> 425x360 -> '
+                           'Копировать HTML',
+            'fields': ('google_maps_html',)
+        }),
         ('О проекте', {
             'fields': ('description', )
         }),

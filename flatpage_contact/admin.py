@@ -9,11 +9,11 @@ from modeltranslation.admin import TranslationStackedInline
 class DescriptionAdminForm(forms.ModelForm):
     """Ckeditor для поля "description" расширенной модели плоской страницы"""
     description_ru = forms.CharField(
-        label='Основной текстовый контент страницы',
+        label='Основной текстовый контент страницы [ru]',
                                      widget=CKEditorUploadingWidget()
     )
     description_en = forms.CharField(
-        label='Основной текстовый контент страницы',
+        label='Основной текстовый контент страницы [en]',
                                      widget=CKEditorUploadingWidget()
     )
 

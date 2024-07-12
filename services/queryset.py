@@ -94,6 +94,11 @@ def _qs_days_posts_in_current_month():
     ).values_list('created__day')
 
 
+def not_definite_qs():
+    """Вызов исключения если ключ для получения queryset не найден"""
+    raise Exception('Ключ для получения queryset не найден.')
+
+
 def qs_definition(qs_key, slug_or_pk):
     """Определение необходимого запроса в БД по ключу"""
     if qs_key == os.getenv('KEY_POSTS_LIST'):

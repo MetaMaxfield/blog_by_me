@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 import os
+from typing import TypeVar
 from dotenv import load_dotenv
 from pathlib import Path
 from django.utils import timezone
@@ -317,3 +318,7 @@ CACHES = {
 
 # Текущая дата
 CURRENT_DATETIME = timezone.now()
+
+
+# Аннотация типа данных
+T = TypeVar('T', bound='django.db.models.base.Model')

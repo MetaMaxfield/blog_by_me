@@ -6,7 +6,10 @@ register = template.Library()
 
 
 @register.filter
-def ru_plural(value, variants):
+def ru_plural(
+        value: int,
+        variants: str
+) -> str:
     """
     Шаблонный фильтр для изменения окончания слова в зависимости от количества
     (Русскоязычный аналог "pluralize")
@@ -15,7 +18,7 @@ def ru_plural(value, variants):
 
 
 @register.filter
-def share_url_format(url):
+def share_url_format(url: str) -> str:
     """
     Шаблонный фильтр для форматирования URL адреса для блока "Поделиться"
     """

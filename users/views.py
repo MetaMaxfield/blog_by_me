@@ -1,4 +1,5 @@
 import os
+from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render
 from django.views import View
 from dotenv import load_dotenv
@@ -9,13 +10,20 @@ load_dotenv()
 
 
 class AuthorsView(View):
-    def get(self, request):
+    def get(
+            self,
+            request: HttpRequest
+    ) -> HttpResponse:
         authors = get_cached_objects_or_queryset(os.getenv('KEY_AUTHORS_LIST'))
         return render(request, 'users/author_list.html', {'authors': authors})
 
 
 class AuthorDetailView(View):
-    def get(self, request, pk):
+    def get(
+            self,
+            request: HttpRequest,
+            pk: int
+    ) -> HttpResponse:
         user = get_cached_objects_or_queryset(os.getenv('KEY_AUTHOR_DETAIL'), pk)
         return render(request, 'users/author_detail.html', {'author': user})
     

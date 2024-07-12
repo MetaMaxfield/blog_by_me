@@ -1,4 +1,5 @@
 import os
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.views import View
 from flatpage_contact.forms import ContactForm
@@ -12,7 +13,10 @@ load_dotenv()
 
 class ExtensionFlatpageView(View):
     """Плоская страница"""
-    def get(self, request):
+    def get(
+            self,
+            request: HttpRequest
+    ) -> HttpResponse:
         contact_flatpage = get_cached_objects_or_queryset(os.getenv('KEY_CONTACT_FLATPAGE'))
         form = ContactForm()
         return render(
@@ -25,7 +29,10 @@ class ExtensionFlatpageView(View):
 
 class FeedbackView(View):
     """Обратная связь"""
-    def post(self, request):
+    def post(
+            self,
+            request: HttpRequest
+    ) -> HttpResponseRedirect:
         form = ContactForm(request.POST)
         if form.is_valid():
             form.save()

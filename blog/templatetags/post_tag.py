@@ -1,6 +1,9 @@
 import os
 from calendar import Calendar
+from datetime import datetime
+from typing import Union
 from django import template
+from django.db.models import QuerySet
 from blog_by_me.settings import CURRENT_DATETIME
 from services.caching import get_cached_objects_or_queryset
 from services.template_tags import add_posts_days_in_list
@@ -10,7 +13,7 @@ register = template.Library()
 
 
 @register.inclusion_tag('include/tags/top_posts.html')
-def top_posts():
+def top_posts() -> dict[str, QuerySet]:
     """
     Шаблонный тег, отображающий популярные посты блога в зависимости от рейтинга
     """
@@ -19,7 +22,7 @@ def top_posts():
 
 
 @register.inclusion_tag('include/tags/last_posts.html')
-def last_posts():
+def last_posts() -> dict[str, QuerySet]:
     """
     Шаблонный тег, отображающий последние добавленные посты в блоге
     """
@@ -28,7 +31,7 @@ def last_posts():
 
 
 @register.inclusion_tag('include/tags/all_tags.html')
-def all_tags():
+def all_tags() -> dict[str, QuerySet]:
     """
     Шаблонный тег, отображающий все теги постов в блоге и их количество
     """
@@ -37,7 +40,7 @@ def all_tags():
 
 
 @register.inclusion_tag('include/tags/calendar.html')
-def calendar():
+def calendar() -> dict[str, Union[list[list[int]]], datetime, set]:
     """
     Шаблонный тег, отображающий календарь
     """

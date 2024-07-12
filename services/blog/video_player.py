@@ -1,5 +1,6 @@
 from pathlib import Path
-from typing import Generator, IO
+from typing import Generator, IO, Optional
+from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
 from blog.models import Video
 
@@ -7,7 +8,7 @@ from blog.models import Video
 def ranged(
         file: IO[bytes],
         start: int = 0,
-        end: int = None,
+        end: Optional[int] = None,
         block_size: int = 8192,
 ) -> Generator[bytes, None, None]:
     consumed = 0
@@ -27,7 +28,10 @@ def ranged(
         file.close()
 
 
-def open_file(request, video_pk: int) -> tuple:
+def open_file(
+        request: HttpRequest,
+        video_pk: int
+) -> tuple[Generator[bytes, None, None], int, int, str]:
     _video = get_object_or_404(Video, pk=video_pk)
 
     path = Path(_video.file.path)

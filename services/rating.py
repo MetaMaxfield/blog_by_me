@@ -1,10 +1,11 @@
 from django.db.models import F
+from django.http import HttpRequest
 from blog.models import Rating, Mark
 from services.client_ip import get_client_ip
 from users.models import CustomUser
 
 
-def create_or_update_rating(request):
+def create_or_update_rating(request: HttpRequest) -> None:
     """
     Добавление записи в БД с выбранной оценкой
     и увеличение счетчика лайков у автора

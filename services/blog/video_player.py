@@ -48,5 +48,4 @@ def open_file(request, video_pk: int) -> tuple:
         file = ranged(file, start=range_start, end=range_end + 1)
         status_code = 206
         content_range = f'bytes {range_start}-{range_end}/{file_size}'
-
     return file, status_code, content_length, content_range

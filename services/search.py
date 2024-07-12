@@ -19,7 +19,7 @@ def search_by_date_or_tag(date_posts, tag_slug, object_list):
     if tag_slug:
         tag = get_object_or_404(Tag, slug=tag_slug)
         object_list = object_list.filter(tags__in=[tag])
-    return [tag, object_list]
+    return tag, object_list
 
 
 def search_by_q(q, object_list, current_language):

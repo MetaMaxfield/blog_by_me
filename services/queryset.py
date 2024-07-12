@@ -101,25 +101,18 @@ def not_definite_qs():
 
 def qs_definition(qs_key, slug_or_pk):
     """Определение необходимого запроса в БД по ключу"""
-    if qs_key == os.getenv('KEY_POSTS_LIST'):
-        return _qs_post_list()
-    elif qs_key == os.getenv('KEY_POST_DETAIL'):
-        return _qs_post_detail(slug_or_pk)
-    elif qs_key == os.getenv('KEY_CATEGORIES_LIST'):
-        return _qs_categories_list()
-    elif qs_key == os.getenv('KEY_VIDEOS_LIST'):
-        return _qs_videos_list()
-    elif qs_key == os.getenv('KEY_CONTACT_FLATPAGE'):
-        return _qs_contact_flatpage()
-    elif qs_key == os.getenv('KEY_AUTHORS_LIST'):
-        return _qs_author_list()
-    elif qs_key == os.getenv('KEY_AUTHOR_DETAIL'):
-        return _qs_author_detail(slug_or_pk)
-    elif qs_key == os.getenv('KEY_TOP_POSTS'):
-        return _qs_top_posts()
-    elif qs_key == os.getenv('KEY_LAST_POSTS'):
-        return _qs_last_posts()
-    elif qs_key == os.getenv('KEY_ALL_TAGS'):
-        return _qs_all_tags()
-    elif qs_key == os.getenv('KEY_POSTS_CALENDAR'):
-        return _qs_days_posts_in_current_month()
+    qs_keys = {
+        os.getenv('KEY_POSTS_LIST'): _qs_post_list,
+        os.getenv('KEY_POST_DETAIL'): _qs_post_detail,
+        os.getenv('KEY_CATEGORIES_LIST'): _qs_categories_list,
+        os.getenv('KEY_VIDEOS_LIST'): _qs_videos_list,
+        os.getenv('KEY_CONTACT_FLATPAGE'): _qs_contact_flatpage,
+        os.getenv('KEY_AUTHORS_LIST'): _qs_author_list,
+        os.getenv('KEY_AUTHOR_DETAIL'): _qs_author_detail,
+        os.getenv('KEY_TOP_POSTS'): _qs_top_posts,
+        os.getenv('KEY_LAST_POSTS'): _qs_last_posts,
+        os.getenv('KEY_ALL_TAGS'): _qs_all_tags,
+        os.getenv('KEY_POSTS_CALENDAR'): _qs_days_posts_in_current_month
+    }
+    definite_qs = qs_keys.get(qs_key, not_definite_qs)
+    return definite_qs(slug_or_pk) if slug_or_pk else definite_qs()

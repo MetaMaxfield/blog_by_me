@@ -1,9 +1,8 @@
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from django.contrib import admin
-from django.contrib.flatpages.admin import FlatPageAdmin
 from django import forms
-from .models import *
-from modeltranslation.admin import TranslationStackedInline
+from modeltranslation.admin import TranslationAdmin
+from flatpage_contact.models import NewFlatpage, Contact
 
 
 class DescriptionAdminForm(forms.ModelForm):
@@ -32,13 +31,9 @@ class ContactAdmin(admin.ModelAdmin):
     readonly_fields = ('name', 'email', 'phone', 'date', 'message')
 
 
-class NewFlatpageInline(TranslationStackedInline):
-    """
-    Отображение новых полей расширенной модели плоской страницы
-    в панеле администрации
-    """
-    model = NewFlatpage
-    verbose_name = 'Содержание'
+@admin.register(NewFlatpage)
+class FlatpageContactAdmin(TranslationAdmin):
+    """Плоская страница"""
     form = DescriptionAdminForm
     fieldsets = (
         ('О проекте', {
@@ -52,24 +47,3 @@ class NewFlatpageInline(TranslationStackedInline):
             'fields': (('phone1_num', 'phone2_num'), )
         }),
     )
-
-
-class FlatPageNewAdmin(FlatPageAdmin):
-    """Плоская страница"""
-    inlines = [NewFlatpageInline]
-    fieldsets = (
-        (None, {'fields': ('url', 'title', 'sites')}),
-        (('Advanced options'), {
-            'fields': ('template_name',),
-        }),
-    )
-    list_display = ('title', 'url')
-    list_display_links = ('title',)
-    list_filter = ('sites', 'registration_required')
-    search_fields = ('url', 'title')
-
-
-# Регистрация расширенной модели плоской страницы
-# для отображения в панели администрации
-admin.site.unregister(FlatPage)
-admin.site.register(FlatPage, FlatPageNewAdmin)

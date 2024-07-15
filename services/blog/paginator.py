@@ -10,4 +10,4 @@ def create_pagination(
     paginator = Paginator(object_list, 3)
     page = request.GET.get('page')
     object_list = paginator.get_page(page)
-    return [paginator, page, object_list]
+    return paginator, object_list

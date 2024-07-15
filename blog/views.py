@@ -23,9 +23,8 @@ class PostsView(View):
     def get(self, request, date_posts=None, tag_slug=None):
         object_list = get_cached_objects_or_queryset(os.getenv('KEY_POSTS_LIST'))
         tag, object_list = search.search_by_date_or_tag(date_posts, tag_slug, object_list)
-        paginator, page, post_list = create_pagination(request, object_list)
-        return render(request, 'blog/post_list.html', {'page': page,
-                                                       'post_list': post_list,
+        paginator, post_list = create_pagination(request, object_list)
+        return render(request, 'blog/post_list.html', {'post_list': post_list,
                                                        'tag': tag,
                                                        'date_posts': date_posts,
                                                        'current_datetime': CURRENT_DATETIME,
@@ -77,9 +76,8 @@ class SearchView(View):
         current_language = request.LANGUAGE_CODE
         object_list = get_cached_objects_or_queryset(os.getenv('KEY_POSTS_LIST'))
         object_list = search.search_by_q(q, object_list, current_language)
-        paginator, page, post_list = create_pagination(request, object_list)
-        return render(request, 'blog/post_list.html', {'page': page,
-                                                       'post_list': post_list,
+        paginator, post_list = create_pagination(request, object_list)
+        return render(request, 'blog/post_list.html', {'post_list': post_list,
                                                        'paginator': paginator,
                                                        'q': q})
 

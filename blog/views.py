@@ -6,10 +6,7 @@ from dotenv import load_dotenv
 from blog_by_me.settings import CURRENT_DATETIME
 from services.blog.paginator import create_pagination
 from services.blog.video_player import open_file
-from services.client_ip import get_client_ip
-from services.rating import create_or_update_rating
-from services import search
-from services.validator import validator_selected_rating
+from services import client_ip, rating, search, validator
 from .models import Post
 from .forms import CommentsForm, RatingForm
 from services.caching import get_cached_objects_or_queryset
@@ -46,8 +43,8 @@ class PostDetailView(View):
         post = get_cached_objects_or_queryset(os.getenv('KEY_POST_DETAIL'), slug)
         form = CommentsForm()
         rating_form = RatingForm()
-        received_ip = get_client_ip(request)
-        selected = validator_selected_rating(received_ip, post)
+        received_ip = client_ip.get_client_ip(request)
+        selected = validator.validator_selected_rating(received_ip, post)
         return render(request, 'blog/post_detail.html',
                       {'post': post,
                        'form': form,
@@ -135,7 +132,7 @@ class AddRatingView(View):
     ) -> HttpResponse:
         form = RatingForm(request.POST)
         if form.is_valid():
-            create_or_update_rating(request)
+            rating.create_or_update_rating(request)
             return HttpResponse(status=201)
         else:
             return HttpResponse(status=400)

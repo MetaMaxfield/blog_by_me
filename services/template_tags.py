@@ -36,10 +36,9 @@ def add_posts_days_in_list(qs_calendar):
 def service_age_tag(birthday):
     """Логика расчёта возраста пользователя"""
     today = CURRENT_DATETIME.date()
-    result = (today.year - birthday.year)
-    if birthday.month >= today.month and birthday.day > today.day:
-        result -= 1
-    return result
+    return today.year - birthday.year - (
+            (today.month, today.day) < (birthday.month, birthday.day)
+    )
 
 
 def service_format_phone_num(num):

@@ -19,10 +19,8 @@ def service_ru_plural(value, variants):
 def service_share_url_format(url):
     """Логика работы форматирования URL адреса для блока "Поделиться"""
     if search(r'/[\w?%=/]+$', url):
-        result, _ = split(r'/[\w?%=/]+$', url)
-        return result
-    else:
-        return url
+        url, _ = split(r'/[\w?%=/]+$', url)
+    return url
 
 
 def add_posts_days_in_list(qs_calendar):

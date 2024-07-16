@@ -28,8 +28,9 @@ def service_share_url_format(url):
 def add_posts_days_in_list(qs_calendar):
     """Добавление в список дней, в которые публиковались посты"""
     posts_days = []
-    [posts_days.append(*x) for x in qs_calendar]
-    return posts_days
+    for day in qs_calendar:
+        posts_days.extend(day)
+    return set(posts_days)
 
 
 def service_age_tag(birthday):

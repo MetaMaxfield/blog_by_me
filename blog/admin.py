@@ -96,18 +96,18 @@ class PostAdmin(TranslationAdmin):
     inlines = [CommentInline, ]
     form = PostAdminForm
     fieldsets = (
-        ('Заголовок', {
-            'fields': ('title', )
-        }),
-        ('Категория', {
+        ['Заголовок', {
+            'fields': ('title',)
+        }],
+        ['Категория и автор', {
             'fields': ('category', 'author')
-        }),
-        ('Содержание', {
-            'fields': ('body', ('image', 'get_image', ), 'video', 'tags', )
-        }),
-        ('Настройки', {
-            'fields': (('draft', 'url'), )
-        }),
+        }],
+        ['Содержание', {
+            'fields': ('body', ('image', 'get_image',), 'video', 'tags',)
+        }],
+        ['Настройки', {
+            'fields': (('draft', 'url'),)
+        }],
     )
 
     def get_image(self, obj):
@@ -131,7 +131,7 @@ class PostAdmin(TranslationAdmin):
 
     def get_fieldsets(self, request, obj=None):
         # Отображение полей в зависимости от статуса пользователя
-        fieldsets = super(PostAdmin, self).get_fieldsets(request, obj)
+        fieldsets = super().get_fieldsets(request, obj)
         if request.user.is_superuser:
             return fieldsets
         else:
@@ -139,8 +139,9 @@ class PostAdmin(TranslationAdmin):
                 request.user.groups.get(name=TITLE_MODERATOR_GROUP)
                 return fieldsets
             except:
-                fieldsets[1][1]['fields'] = ['category', ]
-                return fieldsets
+                fields = fieldsets.copy()
+                fields[1] = ['Категория', {'fields': ('category',)}]
+                return fields
 
     def save_model(self, request, obj, form, change):
         # Приравнивание полю "Автор" текущего пользователя по умолчанию при сохранении поста

@@ -18,7 +18,7 @@ class CustomUserAdmin(UserAdmin, TranslationAdmin):
     fieldsets = [
         [None, {'fields': ['username', 'password']}],
         [
-            ('Personal info'), {
+            ('Персональная информация'), {
                 'fields': (
                     'first_name', 'last_name', 'email',
                     'birthday', 'description', ('image', 'get_image')
@@ -26,7 +26,7 @@ class CustomUserAdmin(UserAdmin, TranslationAdmin):
             }
         ],
         [
-            ('Permissions'),
+            ('Список разрешений'),
             {
                 'fields': (
                     'is_active',
@@ -37,7 +37,7 @@ class CustomUserAdmin(UserAdmin, TranslationAdmin):
                 ),
             },
         ],
-        [('Important dates'), {'fields': ('last_login', 'date_joined')}],
+        [('Важные даты'), {'fields': ('last_login', 'date_joined')}],
     ]
     add_fieldsets = (
         (
@@ -60,16 +60,19 @@ class CustomUserAdmin(UserAdmin, TranslationAdmin):
 
     def get_fieldsets(self, request, obj=None):
         # Отображение полей в зависимости от статуса пользователя
-        fieldsets = super(CustomUserAdmin, self).get_fieldsets(request, obj)
+        fieldsets = super().get_fieldsets(request, obj)
         if request.user.is_superuser:
             return fieldsets
         elif request.user.id == obj.id:
-            fieldsets.pop(2)
-            return fieldsets
+            fields = fieldsets.copy()
+            fields[0][1]['fields'] = ['username', 'password']
+            fields.pop(2)
+            return fields
         else:
-            fieldsets[0][1]['fields'] = ['username', ]
-            fieldsets.pop(2)
-            return fieldsets
+            fields = fieldsets.copy()
+            fields[0][1]['fields'] = ['username', ]
+            fields.pop(2)
+            return fields
 
     def has_change_permission(self, request, obj=None):
         # Разрешение на редактирование модели только суперпользователю

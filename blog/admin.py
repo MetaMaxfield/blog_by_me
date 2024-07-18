@@ -53,7 +53,7 @@ class VideoAdmin(TranslationAdmin):
     search_fields = ('title',)
 
     def get_queryset(self, request):
-        # Получение видео из базы данных в зависимости от статуса пользователя
+        """Получение видео из базы данных в зависимости от статуса пользователя"""
         qs = super().get_queryset(request)
         if request.user.is_superuser:
             return qs
@@ -111,14 +111,17 @@ class PostAdmin(TranslationAdmin):
     )
 
     def get_image(self, obj):
-        # Отображение изображения в панеле администрации
+        """Отображение изображения в панеле администрации"""
         if obj.image:
             return mark_safe(f'<img src={obj.image.url} width="100", height="100"')
         return 'Нет изображения'
     get_image.short_description = 'Изображение'
 
     def get_queryset(self, request):
-        # Получение постов из базы данных в зависимости от статуса пользователя
+        """
+        Получение постов из базы данных
+        в зависимости от статуса пользователя
+        """
         qs = super().get_queryset(request)
         if request.user.is_superuser:
             return qs
@@ -130,7 +133,7 @@ class PostAdmin(TranslationAdmin):
                 return qs.filter(author=request.user)
 
     def get_fieldsets(self, request, obj=None):
-        # Отображение полей в зависимости от статуса пользователя
+        """Отображение полей в зависимости от статуса пользователя"""
         fieldsets = super().get_fieldsets(request, obj)
         if request.user.is_superuser:
             return fieldsets
@@ -144,7 +147,10 @@ class PostAdmin(TranslationAdmin):
                 return fields
 
     def save_model(self, request, obj, form, change):
-        # Приравнивание полю "Автор" текущего пользователя по умолчанию при сохранении поста
+        """
+        Приравнивание полю "Автор" текущего пользователя по умолчанию
+        при сохранении поста
+        """
         if not obj.author:
             obj.author = request.user
         super().save_model(request, obj, form, change)

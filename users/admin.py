@@ -50,7 +50,7 @@ class CustomUserAdmin(UserAdmin, TranslationAdmin):
     )
 
     def get_image(self, obj):
-        # Отображение изображения в панеле администрации
+        """Отображение изображения в панеле администрации"""
         if obj.image:
             return mark_safe(
                 f'<img src={obj.image.url} width="100", height="100"'
@@ -59,7 +59,7 @@ class CustomUserAdmin(UserAdmin, TranslationAdmin):
     get_image.short_description = 'Изображение'
 
     def get_fieldsets(self, request, obj=None):
-        # Отображение полей в зависимости от статуса пользователя
+        """Отображение полей в зависимости от статуса пользователя"""
         fieldsets = super().get_fieldsets(request, obj)
         if request.user.is_superuser:
             return fieldsets
@@ -75,8 +75,10 @@ class CustomUserAdmin(UserAdmin, TranslationAdmin):
             return fields
 
     def has_change_permission(self, request, obj=None):
-        # Разрешение на редактирование модели только суперпользователю
-        # или владельцу
+        """
+        Разрешение на редактирование модели только суперпользователю
+        или владельцу
+        """
         if request.user.is_superuser or request.user == obj:
             return True
         else:

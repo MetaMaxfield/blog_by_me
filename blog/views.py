@@ -161,20 +161,42 @@ class CategoryView(View):
         return render(request, 'blog/category_list.html', {'categories': categories, 'posts': posts})
 
 
-class SearchView(View):
-    """Поиск"""
-    def get(
-            self,
-            request: HttpRequest
-    ) -> HttpResponse:
-        q = request.GET.get('q').capitalize()
-        current_language = request.LANGUAGE_CODE
-        object_list = get_cached_objects_or_queryset(os.getenv('KEY_POSTS_LIST'))
-        object_list = search.search_by_q(q, object_list, current_language)
-        paginator, post_list = create_pagination(request, object_list)
-        return render(request, 'blog/post_list.html', {'post_list': post_list,
-                                                       'paginator': paginator,
-                                                       'q': q})
+# class SearchView(View):
+#     """Поиск"""
+#     def get(
+#             self,
+#             request: HttpRequest
+#     ) -> HttpResponse:
+#         q = request.GET.get('q')
+#         current_language = request.LANGUAGE_CODE
+#         object_list = get_cached_objects_or_queryset(os.getenv('KEY_POSTS_LIST'))
+#         object_list = search.search_by_q(q, object_list, current_language)
+#         paginator, post_list = create_pagination(request, object_list)
+#         return render(request, 'blog/post_list.html', {'post_list': post_list,
+#                                                        'paginator': paginator,
+#                                                        'q': q})
+
+
+class SearchView(ListView):
+    queryset = get_cached_objects_or_queryset(os.getenv('KEY_POSTS_LIST'))
+    paginate_by = COUNT_POSTS_ON_PAGE
+
+    def get_queryset(self):
+        q = self.request.GET.get('q')
+        queryset = super().get_queryset()
+        self.kwargs['q'] = q
+        current_language = self.request.LANGUAGE_CODE
+        return search.search_by_q(q, queryset, current_language)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['q'] = self.kwargs['q']
+
+        context['post_list'] = context['page_obj']
+        del context['page_obj']
+
+        return context
 
 
 class VideosView(View):

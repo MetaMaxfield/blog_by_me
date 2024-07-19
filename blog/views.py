@@ -41,20 +41,40 @@ class PostsView(ListView):
         return context
 
 
-class PostsFilterDateView(View):
-    """Посты блога с фильтрацией по дате"""
-    def get(
-            self,
-            request: HttpRequest,
-            date_posts: int
-    ) -> HttpResponse:
-        object_list = get_cached_objects_or_queryset(os.getenv('KEY_POSTS_LIST'))
-        object_list = search.search_by_date(date_posts, object_list)
-        paginator, post_list = create_pagination(request, object_list)
-        return render(request, 'blog/post_list.html', {'post_list': post_list,
-                                                       'date_posts': date_posts,
-                                                       'current_datetime': CURRENT_DATETIME,
-                                                       'paginator': paginator})
+# class PostsFilterDateView(View):
+#     """Посты блога с фильтрацией по дате"""
+#     def get(
+#             self,
+#             request: HttpRequest,
+#             date_posts: int
+#     ) -> HttpResponse:
+#         object_list = get_cached_objects_or_queryset(os.getenv('KEY_POSTS_LIST'))
+#         object_list = search.search_by_date(date_posts, object_list)
+#         paginator, post_list = create_pagination(request, object_list)
+#         return render(request, 'blog/post_list.html', {'post_list': post_list,
+#                                                        'date_posts': date_posts,
+#                                                        'current_datetime': CURRENT_DATETIME,
+#                                                        'paginator': paginator})
+
+
+class PostsFilterDateView(ListView):
+    queryset = get_cached_objects_or_queryset(os.getenv('KEY_POSTS_LIST'))
+    paginate_by = COUNT_POSTS_ON_PAGE
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return search.search_by_date(self.kwargs['date_posts'], queryset)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['current_datetime'] = CURRENT_DATETIME
+        context['date_posts'] = self.kwargs['date_posts']
+
+        context['post_list'] = context['page_obj']
+        del context['page_obj']
+
+        return context
 
 
 class PostsFilterTagView(View):

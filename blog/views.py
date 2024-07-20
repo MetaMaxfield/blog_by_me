@@ -29,6 +29,7 @@ load_dotenv()
 
 
 class PostsView(ListView):
+    """Посты блога"""
     queryset = get_cached_objects_or_queryset(os.getenv('KEY_POSTS_LIST'))
     paginate_by = COUNT_POSTS_ON_PAGE
 
@@ -58,6 +59,7 @@ class PostsView(ListView):
 
 
 class PostsFilterDateView(ListView):
+    """Посты блога с фильтрацией по дате"""
     queryset = get_cached_objects_or_queryset(os.getenv('KEY_POSTS_LIST'))
     paginate_by = COUNT_POSTS_ON_PAGE
 
@@ -93,6 +95,7 @@ class PostsFilterDateView(ListView):
 
 
 class PostsFilterTagView(ListView):
+    """Посты блога с фильтрацией по тегу"""
     queryset = get_cached_objects_or_queryset(os.getenv('KEY_POSTS_LIST'))
     paginate_by = COUNT_POSTS_ON_PAGE
 
@@ -130,6 +133,7 @@ class PostsFilterTagView(ListView):
 
 
 class PostDetailView(DetailView):
+    """Пост"""
     def get_object(self, **kwargs):
         return get_cached_objects_or_queryset(os.getenv('KEY_POST_DETAIL'), self.kwargs['slug'])
 
@@ -173,6 +177,7 @@ class CommentsView(View):
 
 
 class CategoryView(ListView):
+    """Категории"""
     queryset = get_cached_objects_or_queryset(os.getenv('KEY_CATEGORIES_LIST'))
     context_object_name = 'categories'
 
@@ -199,6 +204,7 @@ class CategoryView(ListView):
 
 
 class SearchView(ListView):
+    """Поиск"""
     queryset = get_cached_objects_or_queryset(os.getenv('KEY_POSTS_LIST'))
     paginate_by = COUNT_POSTS_ON_PAGE
 
@@ -231,6 +237,7 @@ class SearchView(ListView):
 
 
 class VideosView(ListView):
+    """Видеозаписи блога"""
     queryset = get_cached_objects_or_queryset(os.getenv('KEY_VIDEOS_LIST'))
 
 

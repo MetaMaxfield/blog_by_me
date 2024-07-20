@@ -11,6 +11,7 @@ load_dotenv()
 
 
 # class AuthorsView(View):
+#     """Список пользователей"""
 #     def get(
 #             self,
 #             request: HttpRequest
@@ -20,12 +21,14 @@ load_dotenv()
 
 
 class AuthorsView(ListView):
+    """Список пользователей"""
     queryset = get_cached_objects_or_queryset(os.getenv('KEY_AUTHORS_LIST'))
     context_object_name = 'authors'
     template_name = 'users/author_list.html'
 
 
 # class AuthorDetailView(View):
+#     """Профиль пользователя"""
 #     def get(
 #             self,
 #             request: HttpRequest,
@@ -36,6 +39,7 @@ class AuthorsView(ListView):
 
 
 class AuthorDetailView(DetailView):
+    """Профиль пользователя"""
     context_object_name = 'author'
     template_name = 'users/author_detail.html'
 

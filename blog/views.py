@@ -35,10 +35,7 @@ class PostsView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         context['post_list'] = context['page_obj']
-        del context['page_obj']
-
         return context
 
 
@@ -69,13 +66,9 @@ class PostsFilterDateView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         context['current_datetime'] = CURRENT_DATETIME
         context['date_posts'] = self.kwargs['date_posts']
-
         context['post_list'] = context['page_obj']
-        del context['page_obj']
-
         return context
 
 
@@ -101,18 +94,13 @@ class PostsFilterTagView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        tag, queryset = search.search_by_tag(self.kwargs['tag_slug'], queryset)
-        self.kwargs['tag'] = tag
+        self.tag, queryset = search.search_by_tag(self.kwargs['tag_slug'], queryset)
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        context['tag'] = self.kwargs['tag']
-
+        context['tag'] = self.tag
         context['post_list'] = context['page_obj']
-        del context['page_obj']
-
         return context
 
 
@@ -209,20 +197,15 @@ class SearchView(ListView):
     paginate_by = COUNT_POSTS_ON_PAGE
 
     def get_queryset(self):
-        q = self.request.GET.get('q')
+        self.q = self.request.GET.get('q')
         queryset = super().get_queryset()
-        self.kwargs['q'] = q
         current_language = self.request.LANGUAGE_CODE
-        return search.search_by_q(q, queryset, current_language)
+        return search.search_by_q(self.q, queryset, current_language)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        context['q'] = self.kwargs['q']
-
+        context['q'] = self.q
         context['post_list'] = context['page_obj']
-        del context['page_obj']
-
         return context
 
 

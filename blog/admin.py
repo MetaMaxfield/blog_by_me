@@ -1,11 +1,13 @@
-from django.contrib import admin
-from django.utils.safestring import mark_safe
-from django import forms
-from modeltranslation.admin import TranslationAdmin
-from .models import Post, Category, Comment, Video, Mark, Rating
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
+from django import forms
+from django.contrib import admin
+from django.contrib.auth.models import Group
+from django.utils.safestring import mark_safe
+from modeltranslation.admin import TranslationAdmin
+
 from blog_by_me.settings import TITLE_MODERATOR_GROUP
 
+from .models import Category, Comment, Mark, Post, Rating, Video
 
 # Зарегистрированная модель Comment для отображения в панели администрациии
 admin.site.register(Comment)
@@ -13,14 +15,9 @@ admin.site.register(Comment)
 
 class PostAdminForm(forms.ModelForm):
     """Ckeditor для поля "body" модели блога"""
-    body_ru = forms.CharField(
-        label='Содержание [ru]',
-        widget=CKEditorUploadingWidget()
-    )
-    body_en = forms.CharField(
-        label='Содержание [en]',
-        widget=CKEditorUploadingWidget()
-    )
+
+    body_ru = forms.CharField(label='Содержание [ru]', widget=CKEditorUploadingWidget())
+    body_en = forms.CharField(label='Содержание [en]', widget=CKEditorUploadingWidget())
 
     class Meta:
         model = Post
@@ -32,6 +29,7 @@ class CommentInline(admin.TabularInline):
     Отображение комментариев на странице записи
     блога в панеле администрации
     """
+
     model = Comment
     extra = 1
 
@@ -39,6 +37,7 @@ class CommentInline(admin.TabularInline):
 @admin.register(Mark)
 class MarkAdmin(TranslationAdmin):
     """Оценки"""
+
     list_display = ('nomination', 'value')
     list_display_links = ('nomination',)
 
@@ -46,6 +45,7 @@ class MarkAdmin(TranslationAdmin):
 @admin.register(Video)
 class VideoAdmin(TranslationAdmin):
     """Видео"""
+
     list_display = ('title', 'file', 'create_at')
     list_display_links = ('title',)
     list_filter = ('title',)
@@ -61,13 +61,14 @@ class VideoAdmin(TranslationAdmin):
             try:
                 request.user.groups.get(name=TITLE_MODERATOR_GROUP)
                 return qs
-            except:
+            except Group.DoesNotExist:
                 return qs.filter(post_video__author=request.user)
 
 
 @admin.register(Category)
 class CategoryAdmin(TranslationAdmin):
     """Категории"""
+
     list_display = ('name', 'description', 'url')
     list_display_links = ('name',)
     prepopulated_fields = {'url': ('name',)}
@@ -79,35 +80,42 @@ class CategoryAdmin(TranslationAdmin):
 @admin.register(Post)
 class PostAdmin(TranslationAdmin):
     """Посты"""
-    list_display = [
-        'id', 'title', 'url', 'author',
-        'publish', 'draft', 'get_image'
-    ]
+
+    list_display = ['id', 'title', 'url', 'author', 'publish', 'draft', 'get_image']
     list_editable = ('draft',)
     list_filter = ('title', 'author', 'category', 'publish', 'draft')
     list_display_links = ('title',)
     search_fields = ('title', 'body')
-    readonly_fields = ['get_image', ]
+    readonly_fields = [
+        'get_image',
+    ]
     prepopulated_fields = {'url': ('title',)}
     date_hierarchy = 'publish'
     ordering = ('draft', 'publish')
     save_on_top = True
     save_as = True
-    inlines = [CommentInline, ]
+    inlines = [
+        CommentInline,
+    ]
     form = PostAdminForm
     fieldsets = (
-        ['Заголовок', {
-            'fields': ('title',)
-        }],
-        ['Категория и автор', {
-            'fields': ('category', 'author')
-        }],
-        ['Содержание', {
-            'fields': ('body', ('image', 'get_image',), 'video', 'tags',)
-        }],
-        ['Настройки', {
-            'fields': (('draft', 'url'),)
-        }],
+        ['Заголовок', {'fields': ('title',)}],
+        ['Категория и автор', {'fields': ('category', 'author')}],
+        [
+            'Содержание',
+            {
+                'fields': (
+                    'body',
+                    (
+                        'image',
+                        'get_image',
+                    ),
+                    'video',
+                    'tags',
+                )
+            },
+        ],
+        ['Настройки', {'fields': (('draft', 'url'),)}],
     )
 
     def get_image(self, obj):
@@ -115,6 +123,7 @@ class PostAdmin(TranslationAdmin):
         if obj.image:
             return mark_safe(f'<img src={obj.image.url} width="100", height="100"')
         return 'Нет изображения'
+
     get_image.short_description = 'Изображение'
 
     def get_queryset(self, request):
@@ -129,7 +138,7 @@ class PostAdmin(TranslationAdmin):
             try:
                 request.user.groups.get(name=TITLE_MODERATOR_GROUP)
                 return qs
-            except:
+            except Group.DoesNotExist:
                 return qs.filter(author=request.user)
 
     def get_fieldsets(self, request, obj=None):
@@ -141,7 +150,7 @@ class PostAdmin(TranslationAdmin):
             try:
                 request.user.groups.get(name=TITLE_MODERATOR_GROUP)
                 return fieldsets
-            except:
+            except Group.DoesNotExist:
                 fields = fieldsets.copy()
                 fields[1] = ['Категория', {'fields': ('category',)}]
                 return fields
@@ -159,7 +168,12 @@ class PostAdmin(TranslationAdmin):
 @admin.register(Rating)
 class RatingAdmin(admin.ModelAdmin):
     """Рейтинг"""
+
     list_display = ['ip', 'mark', 'post']
-    search_fields = ['ip', ]
+    search_fields = [
+        'ip',
+    ]
     readonly_fields = ['ip', 'mark', 'post']
-    list_filter = ['post', ]
+    list_filter = [
+        'post',
+    ]

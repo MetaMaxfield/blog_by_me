@@ -1,13 +1,14 @@
-from django.db import models
 from django.contrib.flatpages.models import FlatPage
+from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 
 
 class NewFlatpage(models.Model):
     """Расширенная плоская страница"""
+
     flatpage = models.OneToOneField(FlatPage, on_delete=models.CASCADE)
     google_maps_html = models.TextField(verbose_name='HTML-код Google Maps', default='')
-    description = models.TextField(verbose_name = 'Основной текстовый контент страницы', default='')
+    description = models.TextField(verbose_name='Основной текстовый контент страницы', default='')
     email_contact = models.EmailField(verbose_name='Эл. почта для контакта', default='')
     phone1_num = PhoneNumberField(verbose_name='Мобильный телефон')
     phone2_num = PhoneNumberField(verbose_name='Стационарный телефон')
@@ -22,6 +23,7 @@ class NewFlatpage(models.Model):
 
 class Contact(models.Model):
     """Обратная связь"""
+
     name = models.CharField(verbose_name='Имя')
     email = models.EmailField(verbose_name='Эл. почта')
     phone = PhoneNumberField(verbose_name='Телефон')

@@ -1,5 +1,6 @@
 from django.contrib.flatpages.models import FlatPage
 from django.core.management import BaseCommand
+
 from flatpage_contact.models import NewFlatpage
 
 

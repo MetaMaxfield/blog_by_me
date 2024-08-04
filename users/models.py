@@ -46,11 +46,7 @@ class CustomUser(AbstractUser):
 
     def get_user_groups(self):
         # Метод получения групп пользователя
-        try:
-            groups = Group.objects.filter(user__id=self.id)
-            return [group.name for group in groups]
-        except:
-            return []
+        return list(self.groups.values_list('name', flat=True))
     get_user_groups.short_description = 'Группы пользователя'
 
     def get_last_posts_user(self):

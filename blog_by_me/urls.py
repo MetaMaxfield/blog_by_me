@@ -19,16 +19,13 @@ from django.conf import settings
 from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path, include
-
+from django.urls import include, path
 
 urlpatterns = [
     # Панель администратора
     path('admin/', admin.site.urls),
-
     # CKEditor
     path('ckeditor/', include('ckeditor_uploader.urls')),
-
     # Мультиязычность
     path('i18n/', include('django.conf.urls.i18n')),
 ]
@@ -37,10 +34,8 @@ urlpatterns = [
 urlpatterns += i18n_patterns(
     # Простые страницы
     path('pages/', include('flatpage_contact.urls')),
-
     # Страницы пользователей
     path('authors/', include('users.urls')),
-
     # Страницы блога
     path('', include('blog.urls')),
 )
@@ -56,5 +51,4 @@ if settings.DEBUG:
     urlpatterns = [
         path('__debug__/', include("debug_toolbar.urls")),
     ] + urlpatterns
-    urlpatterns += static(settings.MEDIA_URL,
-                          document_root = settings.MEDIA_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

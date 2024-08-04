@@ -9,6 +9,7 @@ class ForceInRussian(MiddlewareMixin):
     установливает языковой файл cookie в запросе
     на русский язык для панели администратора по умолчанию
     """
+
     def process_request(self, request: HttpRequest) -> None:
         if request.path.startswith('/admin'):
             request.COOKIES[settings.LANGUAGE_COOKIE_NAME] = 'ru'

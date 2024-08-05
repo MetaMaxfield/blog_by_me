@@ -1,30 +1,43 @@
-from django.core.management import BaseCommand
-from django.contrib.auth.models import Group, Permission
-from blog_by_me.settings import TITLE_MODERATOR_GROUP, TITLE_AUTHOR_GROUP
 import logging
+
+from django.contrib.auth.models import Group, Permission
+from django.core.management import BaseCommand
+
+from blog_by_me.settings import TITLE_AUTHOR_GROUP, TITLE_MODERATOR_GROUP
 
 GROUPS = {
     TITLE_AUTHOR_GROUP: {
         'Категория': ['add', 'change', 'view'],
-        'Комментарий': ['view', ],
+        'Комментарий': [
+            'view',
+        ],
         'Пост': ['add', 'delete', 'change', 'view'],
-        'Рейтинг': ['view', ],
+        'Рейтинг': [
+            'view',
+        ],
         'Видеозапись': ['add', 'delete', 'change', 'view'],
-        'Пользователь': ['change', ],
-        'Запрос от пользователя блога': ['view', ],
+        'Пользователь': [
+            'change',
+        ],
+        'Запрос от пользователя блога': [
+            'view',
+        ],
         'tag': ['add', 'view'],
         'tagged item': ['add', 'view'],
     },
-
     TITLE_MODERATOR_GROUP: {
         'Категория': ['add', 'delete', 'change', 'view'],
         'Комментарий': ['add', 'delete', 'change', 'view'],
         'Пост': ['add', 'delete', 'change', 'view'],
-        'Рейтинг': ['view', ],
+        'Рейтинг': [
+            'view',
+        ],
         'Видеозапись': ['add', 'delete', 'change', 'view'],
         'Запрос от пользователя блога': ['view', 'delete'],
         'Содержание страницы': ['add', 'delete', 'change', 'view'],
-        'Пользователь': ['view', ],
+        'Пользователь': [
+            'view',
+        ],
         'tag': ['add', 'delete', 'change', 'view'],
         'tagged item': ['add', 'delete', 'change', 'view'],
     },

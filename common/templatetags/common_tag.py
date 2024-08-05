@@ -1,15 +1,12 @@
 from django import template
-from services import template_tags
 
+from services import template_tags
 
 register = template.Library()
 
 
 @register.filter
-def ru_plural(
-        value: int,
-        variants: str
-) -> str:
+def ru_plural(value: int, variants: str) -> str:
     """
     Шаблонный фильтр для изменения окончания слова в зависимости от количества
     (Русскоязычный аналог "pluralize")

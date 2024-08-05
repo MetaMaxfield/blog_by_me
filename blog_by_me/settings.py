@@ -13,11 +13,13 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 import os
-from typing import TypeVar
-from dotenv import load_dotenv
 from pathlib import Path
-from django.utils import timezone
+from typing import TypeVar
 
+from django.db.models.base import Model
+from django.utils import timezone
+from django.utils.translation import gettext_lazy
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -43,7 +45,6 @@ ALLOWED_HOSTS = [
 # Application definition
 INSTALLED_APPS = [
     'modeltranslation',
-
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -53,14 +54,12 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.flatpages',
     'django.contrib.postgres',
-
     'taggit',
     'phonenumber_field',
     'captcha',
     'ckeditor',
     'ckeditor_uploader',
     'debug_toolbar',
-
     'users.apps.UsersConfig',
     'blog',
     'flatpage_contact',
@@ -72,9 +71,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-
     'blog_by_me.middleware.ForceInRussian',
-
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -154,17 +151,14 @@ USE_I18N = True
 
 
 # Список всех доступных языков
-gettext = lambda s:s
 LANGUAGES = (
-    ('ru', gettext('Russia')),
-    ('en', gettext('English')),
+    ('ru', gettext_lazy('Russia')),
+    ('en', gettext_lazy('English')),
 )
 
 
 # Путь Python к файлам локализации
-LOCALE_PATHS = (
-    os.path.join(BASE_DIR, 'locale/'),
-)
+LOCALE_PATHS = (os.path.join(BASE_DIR, 'locale/'),)
 
 
 # Часовой пояс для этого подключения к базе данных
@@ -237,39 +231,72 @@ CKEDITOR_CONFIGS = {
     'default': {
         'skin': 'moono',
         # 'skin': 'office2013',
-        'toolbar_Basic': [
-            ['Source', '-', 'Bold', 'Italic']
-        ],
+        'toolbar_Basic': [['Source', '-', 'Bold', 'Italic']],
         'toolbar_YourCustomToolbarConfig': [
             {'name': 'document', 'items': ['Source', '-', 'Save', 'NewPage', 'Preview', 'Print', '-', 'Templates']},
             {'name': 'clipboard', 'items': ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo']},
             {'name': 'editing', 'items': ['Find', 'Replace', '-', 'SelectAll']},
-            {'name': 'forms',
-             'items': ['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton',
-                       'HiddenField']},
+            {
+                'name': 'forms',
+                'items': [
+                    'Form',
+                    'Checkbox',
+                    'Radio',
+                    'TextField',
+                    'Textarea',
+                    'Select',
+                    'Button',
+                    'ImageButton',
+                    'HiddenField',
+                ],
+            },
             '/',
-            {'name': 'basicstyles',
-             'items': ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat']},
-            {'name': 'paragraph',
-             'items': ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-',
-                       'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl',
-                       'Language']},
+            {
+                'name': 'basicstyles',
+                'items': ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'],
+            },
+            {
+                'name': 'paragraph',
+                'items': [
+                    'NumberedList',
+                    'BulletedList',
+                    '-',
+                    'Outdent',
+                    'Indent',
+                    '-',
+                    'Blockquote',
+                    'CreateDiv',
+                    '-',
+                    'JustifyLeft',
+                    'JustifyCenter',
+                    'JustifyRight',
+                    'JustifyBlock',
+                    '-',
+                    'BidiLtr',
+                    'BidiRtl',
+                    'Language',
+                ],
+            },
             {'name': 'links', 'items': ['Link', 'Unlink', 'Anchor']},
-            {'name': 'insert',
-             'items': ['Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe']},
+            {
+                'name': 'insert',
+                'items': ['Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'],
+            },
             '/',
             {'name': 'styles', 'items': ['Styles', 'Format', 'Font', 'FontSize']},
             {'name': 'colors', 'items': ['TextColor', 'BGColor']},
             {'name': 'tools', 'items': ['Maximize', 'ShowBlocks']},
             {'name': 'about', 'items': ['About']},
             '/',  # put this to force next toolbar on new line
-            {'name': 'yourcustomtools', 'items': [
-                # put the name of your editor.ui.addButton here
-                'Preview',
-                'Maximize',
-                'Youtube',
-
-            ]},
+            {
+                'name': 'yourcustomtools',
+                'items': [
+                    # put the name of your editor.ui.addButton here
+                    'Preview',
+                    'Maximize',
+                    'Youtube',
+                ],
+            },
         ],
         'toolbar': 'YourCustomToolbarConfig',  # put selected toolbar config here
         # 'toolbarGroups': [{ 'name': 'document', 'groups': [ 'mode', 'document', 'doctools' ] }],
@@ -280,23 +307,25 @@ CKEDITOR_CONFIGS = {
         # 'toolbarCanCollapse': True,
         # 'mathJaxLib': '//cdn.mathjax.org/mathjax/2.2-latest/MathJax.js?config=TeX-AMS_HTML',
         'tabSpaces': 4,
-        'extraPlugins': ','.join([
-            'uploadimage', # the upload image feature
-            # your extra plugins here
-            'div',
-            'autolink',
-            'autoembed',
-            'embedsemantic',
-            'autogrow',
-            # 'devtools',
-            'widget',
-            'lineutils',
-            'clipboard',
-            'dialog',
-            'dialogui',
-            'elementspath',
-            'youtube'
-        ]),
+        'extraPlugins': ','.join(
+            [
+                'uploadimage',  # the upload image feature
+                # your extra plugins here
+                'div',
+                'autolink',
+                'autoembed',
+                'embedsemantic',
+                'autogrow',
+                # 'devtools',
+                'widget',
+                'lineutils',
+                'clipboard',
+                'dialog',
+                'dialogui',
+                'elementspath',
+                'youtube',
+            ]
+        ),
     }
 }
 
@@ -309,7 +338,7 @@ INTERNAL_IPS = [
 
 # Настройки кэша
 CACHES = {
-    'default' : {
+    'default': {
         'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
         'LOCATION': '127.0.0.1:11211',
     }
@@ -321,7 +350,7 @@ CURRENT_DATETIME = timezone.now()
 
 
 # Аннотация типа данных
-T = TypeVar('T', bound='django.db.models.base.Model')
+T = TypeVar('T', bound=Model)
 
 
 # Количество постов на странице

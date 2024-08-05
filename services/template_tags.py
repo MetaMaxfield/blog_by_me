@@ -1,21 +1,19 @@
 import datetime
-from re import split, search
+from re import search, split
+
 from django.db.models import QuerySet
 from phonenumber_field.phonenumber import PhoneNumber
+
 from blog_by_me.settings import CURRENT_DATETIME
 
 
-def service_ru_plural(
-        value: int,
-        variants: str
-) -> str:
+def service_ru_plural(value: int, variants: str) -> str:
     """Логика изменения окончания слова в зависимости от количества"""
     variants = variants.split(',')
     value = abs(int(value))
     if value % 10 == 1 and value % 100 != 11:
         variant = 0
-    elif value % 10 >= 2 and value % 10 <= 4 and \
-            (value % 100 < 10 or value % 100 >= 20):
+    elif value % 10 >= 2 and value % 10 <= 4 and (value % 100 < 10 or value % 100 >= 20):
         variant = 1
     else:
         variant = 2
@@ -40,9 +38,7 @@ def add_posts_days_in_list(qs_calendar: QuerySet) -> set[int]:
 def service_age_tag(birthday: datetime.date) -> int:
     """Логика расчёта возраста пользователя"""
     today = CURRENT_DATETIME.date()
-    return today.year - birthday.year - (
-            (today.month, today.day) < (birthday.month, birthday.day)
-    )
+    return today.year - birthday.year - ((today.month, today.day) < (birthday.month, birthday.day))
 
 
 def service_format_phone_num(num: PhoneNumber) -> str:

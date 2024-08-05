@@ -5,12 +5,14 @@ from django.contrib.flatpages.models import FlatPage
 
 class FlatPageAdmin(FlatPageAdmin):
     """Плоская страница"""
+
     fieldsets = (
         (None, {'fields': ('url', 'title', 'sites')}),
         (
-            ('Advanced options'), {
+            ('Advanced options'),
+            {
                 'fields': ('template_name',),
-            }
+            },
         ),
     )
     list_display = ('title', 'url')

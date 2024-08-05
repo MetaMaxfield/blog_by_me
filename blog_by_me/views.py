@@ -1,12 +1,9 @@
-from django.http import HttpRequest, HttpResponse, Http404
-from django.shortcuts import render
 from django.contrib import admin
+from django.http import Http404, HttpRequest, HttpResponse
+from django.shortcuts import render
 
 
-def page_not_found_view(
-        request: HttpRequest,
-        exception: Http404
-) -> HttpResponse:
+def page_not_found_view(request: HttpRequest, exception: Http404) -> HttpResponse:
     """
     Представление, которое должно быть вызвано,
     если ни один из шаблонов URL-адресов не совпадает

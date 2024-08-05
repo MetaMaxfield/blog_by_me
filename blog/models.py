@@ -1,12 +1,13 @@
 from django.core.validators import FileExtensionValidator
 from django.db import models
-from django.utils import timezone
 from django.urls import reverse
+from django.utils import timezone
 from taggit.managers import TaggableManager
 
 
 class Category(models.Model):
     """Котегории"""
+
     name = models.CharField(verbose_name='Категория', max_length=150)
     description = models.TextField(verbose_name='Описание')
     url = models.SlugField(max_length=160, unique=True)
@@ -21,12 +22,11 @@ class Category(models.Model):
 
 class Video(models.Model):
     """Видео"""
+
     title = models.CharField(max_length=100, verbose_name='Заголовок видео')
     description = models.TextField(verbose_name='Описание видео')
     file = models.FileField(
-        upload_to='video/',
-        validators=[FileExtensionValidator(allowed_extensions=['mp4'])],
-        verbose_name='Видеофайл'
+        upload_to='video/', validators=[FileExtensionValidator(allowed_extensions=['mp4'])], verbose_name='Видеофайл'
     )
     create_at = models.DateTimeField(auto_now_add=True)
 
@@ -34,28 +34,31 @@ class Video(models.Model):
         return self.title
 
     class Meta:
-        ordering = ('-create_at', )
+        ordering = ('-create_at',)
         verbose_name = 'Видеозапись'
         verbose_name_plural = 'Видеозаписи'
 
 
 class Post(models.Model):
     """Пост"""
+
     title = models.CharField(verbose_name='Заголовок', max_length=250)
     url = models.SlugField(max_length=25, unique_for_date='publish', unique=True)
     author = models.ForeignKey(
-        'users.CustomUser', verbose_name='Автор', on_delete=models.CASCADE, related_name='post_author',
-        null=True
+        'users.CustomUser', verbose_name='Автор', on_delete=models.CASCADE, related_name='post_author', null=True
     )
     category = models.ForeignKey(
-        'blog.Category', verbose_name='Категория', related_name='post_category', on_delete=models.SET_NULL,
-        null=True
+        'blog.Category', verbose_name='Категория', related_name='post_category', on_delete=models.SET_NULL, null=True
     )
     tags = TaggableManager(related_name='post_tags')
     body = models.TextField(verbose_name='Содержание')
     video = models.OneToOneField(
-        Video, verbose_name='Видео к записи', related_name='post_video', on_delete=models.SET_NULL,
-        null=True, blank=True
+        Video,
+        verbose_name='Видео к записи',
+        related_name='post_video',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
     )
     image = models.ImageField(verbose_name='Изображение', upload_to='posts/')
     publish = models.DateTimeField(default=timezone.now)
@@ -67,12 +70,10 @@ class Post(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return reverse('post_detail', kwargs={'slug' : self.url})
+        return reverse('post_detail', kwargs={'slug': self.url})
 
     def get_comment(self):
-        return self.comments.filter(
-            parent__isnull=True, active=True
-        ).prefetch_related('parent_comments')
+        return self.comments.filter(parent__isnull=True, active=True).prefetch_related('parent_comments')
 
     class Meta:
         verbose_name = 'Пост'
@@ -82,13 +83,15 @@ class Post(models.Model):
 
 class Comment(models.Model):
     """Комментарии"""
-    post = models.ForeignKey(
-        'blog.Post', verbose_name='Запись',
-        on_delete=models.CASCADE, related_name='comments'
-    )
+
+    post = models.ForeignKey('blog.Post', verbose_name='Запись', on_delete=models.CASCADE, related_name='comments')
     parent = models.ForeignKey(
-        'self', verbose_name='Родитель', on_delete=models.SET_NULL,
-        blank=True, null=True, related_name='parent_comments'
+        'self',
+        verbose_name='Родитель',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name='parent_comments',
     )
     name = models.CharField(verbose_name='Имя', max_length=80)
     email = models.EmailField()
@@ -108,6 +111,7 @@ class Comment(models.Model):
 
 class Mark(models.Model):
     """Оценка"""
+
     nomination = models.CharField(verbose_name='Наименование', max_length=10)
     value = models.SmallIntegerField(verbose_name="Значение", default=0)
 
@@ -117,16 +121,15 @@ class Mark(models.Model):
     class Meta:
         verbose_name = 'Значение рейтинга'
         verbose_name_plural = 'Значения рейтинга'
-        ordering = ('value', )
+        ordering = ('value',)
 
 
 class Rating(models.Model):
     """Рейтинг"""
+
     ip = models.CharField(verbose_name='IP адрес', max_length=15)
     mark = models.ForeignKey('blog.Mark', verbose_name='Оценка', on_delete=models.CASCADE)
-    post = models.ForeignKey(
-        'blog.Post', verbose_name='Пост', on_delete=models.CASCADE, related_name='rating_post'
-    )
+    post = models.ForeignKey('blog.Post', verbose_name='Пост', on_delete=models.CASCADE, related_name='rating_post')
 
     def __str__(self):
         return f'{self.mark}'

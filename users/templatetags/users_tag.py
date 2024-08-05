@@ -1,7 +1,8 @@
 from datetime import datetime
-from django import template
-from services.template_tags import service_age_tag
 
+from django import template
+
+from services.template_tags import service_age_tag
 
 register = template.Library()
 

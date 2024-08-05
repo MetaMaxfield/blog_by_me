@@ -1,6 +1,7 @@
 from django.db.models import F
 from django.http import HttpRequest
-from blog.models import Rating, Mark
+
+from blog.models import Mark, Rating
 from services.client_ip import get_client_ip
 from users.models import CustomUser
 
@@ -13,7 +14,7 @@ def create_or_update_rating(request: HttpRequest) -> None:
     Rating.objects.update_or_create(
         ip=get_client_ip(request),
         post_id=int(request.POST.get('post')),
-        defaults={'mark_id': int(request.POST.get("mark"))}
+        defaults={'mark_id': int(request.POST.get("mark"))},
     )
     if int(request.POST.get('mark')) == Mark.objects.get(nomination='Лайк').id:
         like = CustomUser.objects.get(post_author=int(request.POST.get('post')))

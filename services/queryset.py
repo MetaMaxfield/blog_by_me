@@ -2,7 +2,7 @@ import os
 from typing import NoReturn, Union
 
 from django.contrib.flatpages.models import FlatPage
-from django.db.models import Count, QuerySet, Sum
+from django.db.models import Count, QuerySet, Sum, Prefetch, Q
 from django.db.models.functions import Coalesce
 from django.shortcuts import get_object_or_404
 from dotenv import load_dotenv
@@ -77,8 +77,8 @@ def _qs_author_detail(pk: int) -> T | NoReturn:
 def _qs_top_posts() -> QuerySet:
     """QS с тремя самыми популярными постами"""
     return (
-        Post.objects.only('title', 'body', 'rating_post', 'url')
-        .annotate(total_likes=Coalesce(Sum('rating_post__mark__value'), 0))
+        Post.objects.filter(draft=False).only('title', 'body', 'url')
+        .alias(total_likes=Coalesce(Sum('rating_post__mark__value'), 0))
         .order_by('-total_likes')[:3]
     )
 
@@ -90,7 +90,7 @@ def _qs_last_posts() -> QuerySet:
 
 def _qs_all_tags() -> QuerySet:
     """QS с десятью популярными тегами по количеству использования"""
-    return Tag.objects.annotate(npost=Count('post_tags')).order_by('-npost')[:10]
+    return Tag.objects.annotate(npost=Count('post_tags', filter=Q(post_tags__draft=False))).order_by('-npost')[:10]
 
 
 def _qs_days_posts_in_current_month() -> QuerySet:

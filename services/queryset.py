@@ -20,13 +20,12 @@ def _qs_post_list() -> QuerySet:
     return (
         Post.objects.filter(draft=False)
         .select_related(
-            'author',
             'category',
         )
-        .prefetch_related('tagged_items__tag')
-        .only(
-            'url', 'body', 'author__username', 'author__id', 'publish', 'title', 'image', 'category__name', 'comments'
+        .prefetch_related(
+            'tagged_items__tag', Prefetch('author', CustomUser.objects.only('username', 'id'))
         )
+        .defer('video', 'created', 'updated', 'draft')
         .annotate(ncomments=Count('comments'))
     )
 
@@ -34,7 +33,9 @@ def _qs_post_list() -> QuerySet:
 def _qs_post_detail(slug: str) -> T | NoReturn:
     """Отдельная запись в блоге"""
     return get_object_or_404(
-        Post.objects.filter(draft=False).select_related('author').annotate(ncomments=Count('comments')), url=slug
+        Post.objects.filter(draft=False)
+        .prefetch_related(Prefetch('author', CustomUser.objects.only('id', 'username')))
+        .annotate(ncomments=Count('comments')), url=slug
     )
 
 
@@ -48,9 +49,8 @@ def _qs_videos_list() -> QuerySet:
     return (
         Video.objects.filter(post_video__draft=False)
         .prefetch_related(
-            'post_video__author',
+            Prefetch('post_video__author', CustomUser.objects.only('username', 'id')),
             'post_video__category',
-            'post_video__comments',
         )
         .annotate(ncomments=Count('post_video__comments'))
         .order_by('-create_at')
@@ -71,7 +71,7 @@ def _qs_author_list() -> QuerySet:
 
 def _qs_author_detail(pk: int) -> T | NoReturn:
     """QS с отдельным автором"""
-    return get_object_or_404(CustomUser.objects.prefetch_related('post_author'), id=pk)
+    return get_object_or_404(CustomUser.objects.annotate(nposts=Count('post_author')), id=pk)
 
 
 def _qs_top_posts() -> QuerySet:

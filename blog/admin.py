@@ -2,6 +2,7 @@ from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from django import forms
 from django.contrib import admin
 from django.contrib.auth.models import Group
+from django.utils import timezone
 from django.utils.safestring import mark_safe
 from modeltranslation.admin import TranslationAdmin
 
@@ -14,10 +15,20 @@ admin.site.register(Comment)
 
 
 class PostAdminForm(forms.ModelForm):
-    """Ckeditor для поля "body" модели блога"""
+    """Настройки CKEditor для поля "body" и валидация даты публикации в модели Post"""
 
     body_ru = forms.CharField(label='Содержание [ru]', widget=CKEditorUploadingWidget())
     body_en = forms.CharField(label='Содержание [en]', widget=CKEditorUploadingWidget())
+
+    def clean_publish(self):
+        """
+        Проверяет, чтобы дата публикации была не раньше сегодняшнего дня
+        (время в пределах указанной даты может быть прошедшим)
+        """
+        publish_date = self.cleaned_data['publish']
+        if publish_date.date() < timezone.now().date():
+            raise forms.ValidationError("Дата публикации не может быть в прошлом.")
+        return publish_date
 
     class Meta:
         model = Post
@@ -91,7 +102,7 @@ class PostAdmin(TranslationAdmin):
     ]
     prepopulated_fields = {'url': ('title',)}
     date_hierarchy = 'publish'
-    ordering = ('draft', 'publish')
+    ordering = ('-draft', '-publish')
     save_on_top = True
     save_as = True
     inlines = [
@@ -115,7 +126,16 @@ class PostAdmin(TranslationAdmin):
                 )
             },
         ],
-        ['Настройки', {'fields': (('draft', 'url'),)}],
+        [
+            'Настройки',
+            {
+                'fields': (
+                    'draft',
+                    'url',
+                    'publish',
+                )
+            },
+        ],
     )
 
     def get_image(self, obj):
@@ -125,6 +145,16 @@ class PostAdmin(TranslationAdmin):
         return 'Нет изображения'
 
     get_image.short_description = 'Изображение'
+
+    def get_readonly_fields(self, request, obj=None):
+        """
+        Добавление поля 'publish' в список только для чтения,
+        если объект существует и дата публикации уже наступила
+        """
+        returned_readonly_fields = self.readonly_fields.copy()
+        if obj and obj.publish <= timezone.now():
+            returned_readonly_fields.append('publish')
+        return returned_readonly_fields
 
     def get_queryset(self, request):
         """

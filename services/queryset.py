@@ -5,6 +5,7 @@ from django.contrib.flatpages.models import FlatPage
 from django.db.models import Count, QuerySet, Sum, Prefetch, Q
 from django.db.models.functions import Coalesce
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from dotenv import load_dotenv
 from taggit.models import Tag
 
@@ -18,7 +19,7 @@ load_dotenv()
 def _qs_post_list() -> QuerySet:
     """Общий QS с записями блога"""
     return (
-        Post.objects.filter(draft=False)
+        Post.objects.filter(draft=False, publish__lte=timezone.now())
         .select_related(
             'category',
         )
@@ -33,7 +34,7 @@ def _qs_post_list() -> QuerySet:
 def _qs_post_detail(slug: str) -> T | NoReturn:
     """Отдельная запись в блоге"""
     return get_object_or_404(
-        Post.objects.filter(draft=False)
+        Post.objects.filter(draft=False, publish__lte=timezone.now())
         .prefetch_related(Prefetch('author', CustomUser.objects.only('id', 'username')))
         .annotate(ncomments=Count('comments')), url=slug
     )
@@ -47,7 +48,7 @@ def _qs_categories_list() -> QuerySet:
 def _qs_videos_list() -> QuerySet:
     """QS со всеми видеозаписями"""
     return (
-        Video.objects.filter(post_video__draft=False)
+        Video.objects.filter(post_video__draft=False, post_video__publish__lte=timezone.now())
         .prefetch_related(
             Prefetch('post_video__author', CustomUser.objects.only('username', 'id')),
             'post_video__category',
@@ -71,13 +72,18 @@ def _qs_author_list() -> QuerySet:
 
 def _qs_author_detail(pk: int) -> T | NoReturn:
     """QS с отдельным автором"""
-    return get_object_or_404(CustomUser.objects.annotate(nposts=Count('post_author')), id=pk)
+    return get_object_or_404(
+        CustomUser.objects.annotate(
+            nposts=Count('post_author', filter=Q(post_author__draft=False, post_author__publish__lte=timezone.now()))
+        ),
+        id=pk
+    )
 
 
 def _qs_top_posts() -> QuerySet:
     """QS с тремя самыми популярными постами"""
     return (
-        Post.objects.filter(draft=False).only('title', 'body', 'url')
+        Post.objects.filter(draft=False, publish__lte=timezone.now()).only('title', 'body', 'url')
         .alias(total_likes=Coalesce(Sum('rating_post__mark__value'), 0))
         .order_by('-total_likes')[:3]
     )
@@ -85,18 +91,29 @@ def _qs_top_posts() -> QuerySet:
 
 def _qs_last_posts() -> QuerySet:
     """QS с последними тремя добавленными постами"""
-    return Post.objects.filter(draft=False).only('image', 'title', 'body', 'url')[:3]
+    return Post.objects.filter(draft=False, publish__lte=timezone.now()).only('image', 'title', 'body', 'url')[:3]
 
 
 def _qs_all_tags() -> QuerySet:
     """QS с десятью популярными тегами по количеству использования"""
-    return Tag.objects.annotate(npost=Count('post_tags', filter=Q(post_tags__draft=False))).order_by('-npost')[:10]
+    return Tag.objects.annotate(
+        npost=Count(
+            'post_tags',
+            filter=Q(
+                post_tags__draft=False,
+                post_tags__publish__lte=timezone.now()
+            )
+        )
+    ).order_by('-npost')[:10]
 
 
 def _qs_days_posts_in_current_month() -> QuerySet:
     """Дни публикаций в текущем месяце для календаря"""
     return Post.objects.filter(
-        created__year=CURRENT_DATETIME.year, created__month=CURRENT_DATETIME.month, draft=False
+        created__year=CURRENT_DATETIME.year,
+        created__month=CURRENT_DATETIME.month,
+        draft=False,
+        publish__lte=timezone.now()
     ).values_list('created__day')
 
 

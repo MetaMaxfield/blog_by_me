@@ -17,7 +17,6 @@ from pathlib import Path
 from typing import TypeVar
 
 from django.db.models.base import Model
-from django.utils import timezone
 from django.utils.translation import gettext_lazy
 from dotenv import load_dotenv
 
@@ -343,10 +342,6 @@ CACHES = {
         'LOCATION': '127.0.0.1:11211',
     }
 }
-
-
-# Текущая дата
-CURRENT_DATETIME = timezone.now()
 
 
 # Аннотация типа данных

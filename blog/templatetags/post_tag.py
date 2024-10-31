@@ -5,8 +5,8 @@ from typing import Union
 
 from django import template
 from django.db.models import QuerySet
+from django.utils import timezone
 
-from blog_by_me.settings import CURRENT_DATETIME
 from services.caching import get_cached_objects_or_queryset
 from services.template_tags import add_posts_days_in_list
 
@@ -46,8 +46,9 @@ def calendar() -> dict[str, Union[list[list[int]]], datetime, set]:
     Шаблонный тег, отображающий календарь
     """
     qs_calendar = get_cached_objects_or_queryset(os.getenv('KEY_POSTS_CALENDAR'))
+    current_datetime = timezone.now()
     return {
-        'month': Calendar().monthdayscalendar(CURRENT_DATETIME.year, CURRENT_DATETIME.month),
-        'current_datetime': CURRENT_DATETIME,
+        'month': Calendar().monthdayscalendar(current_datetime.year, current_datetime.month),
+        'current_datetime': current_datetime,
         'posts_days': add_posts_days_in_list(qs_calendar),
     }

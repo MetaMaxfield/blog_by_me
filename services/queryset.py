@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 from taggit.models import Tag
 
 from blog.models import Category, Post, Video
-from blog_by_me.settings import CURRENT_DATETIME, T
+from blog_by_me.settings import T
 from users.models import CustomUser
 
 load_dotenv()
@@ -109,9 +109,10 @@ def _qs_all_tags() -> QuerySet:
 
 def _qs_days_posts_in_current_month() -> QuerySet:
     """Дни публикаций в текущем месяце для календаря"""
+    current_datetime = timezone.now()
     return Post.objects.filter(
-        created__year=CURRENT_DATETIME.year,
-        created__month=CURRENT_DATETIME.month,
+        created__year=current_datetime.year,
+        created__month=current_datetime.month,
         draft=False,
         publish__lte=timezone.now()
     ).values_list('created__day')

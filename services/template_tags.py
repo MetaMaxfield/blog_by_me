@@ -2,9 +2,8 @@ import datetime
 from re import search, split
 
 from django.db.models import QuerySet
+from django.utils import timezone
 from phonenumber_field.phonenumber import PhoneNumber
-
-from blog_by_me.settings import CURRENT_DATETIME
 
 
 def service_ru_plural(value: int, variants: str) -> str:
@@ -37,7 +36,7 @@ def add_posts_days_in_list(qs_calendar: QuerySet) -> set[int]:
 
 def service_age_tag(birthday: datetime.date) -> int:
     """Логика расчёта возраста пользователя"""
-    today = CURRENT_DATETIME.date()
+    today = timezone.now().date()
     return today.year - birthday.year - ((today.month, today.day) < (birthday.month, birthday.day))
 
 

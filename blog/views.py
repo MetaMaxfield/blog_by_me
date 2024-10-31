@@ -2,11 +2,12 @@ import os
 
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, StreamingHttpResponse
 from django.shortcuts import redirect, render
+from django.utils import timezone
 from django.views import View
 from django.views.generic import DetailView, ListView
 from dotenv import load_dotenv
 
-from blog_by_me.settings import COUNT_POSTS_ON_PAGE, CURRENT_DATETIME
+from blog_by_me.settings import COUNT_POSTS_ON_PAGE
 from services import client_ip, rating, search, validator
 from services.blog.paginator import create_pagination
 from services.blog.video_player import open_file
@@ -54,7 +55,7 @@ class PostsView(ListView):
 #         paginator, post_list = create_pagination(request, object_list)
 #         return render(request, 'blog/post_list.html', {'post_list': post_list,
 #                                                        'date_posts': date_posts,
-#                                                        'current_datetime': CURRENT_DATETIME,
+#                                                        'current_datetime': timezone.now(),
 #                                                        'paginator': paginator})
 
 
@@ -70,7 +71,7 @@ class PostsFilterDateView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['current_datetime'] = CURRENT_DATETIME
+        context['current_datetime'] = timezone.now()
         context['date_posts'] = self.kwargs['date_posts']
         context['post_list'] = context['page_obj']
         return context

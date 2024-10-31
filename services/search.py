@@ -3,9 +3,8 @@ from typing import Tuple
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.db.models import QuerySet
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from taggit.models import Tag
-
-from blog_by_me.settings import CURRENT_DATETIME
 
 
 def search_by_tag(tag_slug: str, object_list: QuerySet) -> Tuple[Tag, QuerySet]:
@@ -22,9 +21,10 @@ def search_by_date(date_posts: int, object_list: QuerySet) -> QuerySet:
     """
     Функция валидирует записи по дате
     """
+    current_datetime = timezone.now()
     object_list = object_list.filter(
-        created__year=CURRENT_DATETIME.year,
-        created__month=CURRENT_DATETIME.month,
+        created__year=current_datetime.year,
+        created__month=current_datetime.month,
         created__day=date_posts,
     )
     return object_list

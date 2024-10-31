@@ -72,7 +72,12 @@ def _qs_author_list() -> QuerySet:
 
 def _qs_author_detail(pk: int) -> T | NoReturn:
     """QS с отдельным автором"""
-    return get_object_or_404(CustomUser.objects.annotate(nposts=Count('post_author')), id=pk)
+    return get_object_or_404(
+        CustomUser.objects.annotate(
+            nposts=Count('post_author', filter=Q(post_author__draft=False, post_author__publish__lte=timezone.now()))
+        ),
+        id=pk
+    )
 
 
 def _qs_top_posts() -> QuerySet:

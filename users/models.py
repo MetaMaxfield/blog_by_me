@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser, Group
 from django.db import models
+from django.utils import timezone
 
 from blog_by_me.settings import STATIC_URL
 from services.users.validator import username_validator
@@ -46,7 +47,7 @@ class CustomUser(AbstractUser):
     def get_last_posts_user(self):
         """Метод получения трёх последних опубликованных постов пользователя"""
         return (
-            self.post_author.filter(draft=False)
+            self.post_author.filter(draft=False, publish__lte=timezone.now())
             .select_related('category', 'author')
             .only('category__name', 'title', 'url', 'body', 'image', 'publish', 'author__id')[:3]
         )

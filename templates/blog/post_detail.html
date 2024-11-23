@@ -86,7 +86,8 @@
                           method="post" name="rating">
                         <b>{% trans 'Как вы оцениваете данный пост?' %}</b>
                         {% csrf_token %}
-                        <input type="hidden" value="{{ post.id }}" name="post">
+                        <input type="hidden" value="{{ post.url }}" name="post">
+                        <input type="hidden" value="{{ post.author.id }}" name="author">
                         <span>
                             {% for choice_id, nomination in rating_form.fields.mark.choices %}
                                 <input id="rating{{ nomination }}" type="radio" name="mark" value="{{ choice_id }}">

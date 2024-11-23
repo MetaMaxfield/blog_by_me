@@ -1,9 +1,14 @@
+import os
 from django.db.models import F
 from django.http import HttpRequest
 
 from blog.models import Mark, Rating
+from services.caching import get_cached_objects_or_queryset
 from services.client_ip import get_client_ip
 from users.models import CustomUser
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 def create_or_update_rating(request: HttpRequest) -> None:
@@ -13,10 +18,10 @@ def create_or_update_rating(request: HttpRequest) -> None:
     """
     Rating.objects.update_or_create(
         ip=get_client_ip(request),
-        post_id=int(request.POST.get('post')),
+        post=get_cached_objects_or_queryset(os.getenv('KEY_POST_DETAIL'), request.POST.get('post')),
         defaults={'mark_id': int(request.POST.get("mark"))},
     )
     if int(request.POST.get('mark')) == Mark.objects.get(nomination='Лайк').id:
-        like = CustomUser.objects.get(post_author=int(request.POST.get('post')))
-        like.total_likes = F('total_likes') + 1
-        like.save()
+        user = get_cached_objects_or_queryset(os.getenv('KEY_AUTHOR_DETAIL'), request.POST.get('author'))
+        user.total_likes = F('total_likes') + 1
+        user.save()

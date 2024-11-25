@@ -5,6 +5,8 @@ from django.core.management import BaseCommand
 
 from blog_by_me.settings import TITLE_AUTHOR_GROUP, TITLE_MODERATOR_GROUP
 
+logger = logging.getLogger(__name__)
+
 GROUPS = {
     TITLE_AUTHOR_GROUP: {
         'Категория': ['add', 'change', 'view'],
@@ -19,7 +21,7 @@ GROUPS = {
         'Пользователь': [
             'change',
         ],
-        'Запрос от пользователя блога': [
+        'Запрос': [
             'view',
         ],
         'tag': ['add', 'view'],
@@ -33,8 +35,8 @@ GROUPS = {
             'view',
         ],
         'Видеозапись': ['add', 'delete', 'change', 'view'],
-        'Запрос от пользователя блога': ['view', 'delete'],
-        'Содержание страницы': ['add', 'delete', 'change', 'view'],
+        'Запрос': ['view', 'delete'],
+        'Содержание страницы': ['change', 'view'],
         'Пользователь': [
             'view',
         ],
@@ -53,6 +55,12 @@ class Command(BaseCommand):
         for group_name in GROUPS:
             new_group, created = Group.objects.get_or_create(name=group_name)
 
+            # Сообщение о производимом действии
+            if created:
+                self.stdout.write(f'\nСоздание группы {group_name}.')
+            else:
+                self.stdout.write(f'\nГруппа {group_name} уже существует, права будут обновлены.')
+
             # Цикл моделей в группах
             for app_model in GROUPS[group_name]:
 
@@ -61,12 +69,16 @@ class Command(BaseCommand):
 
                     # Создание названия разрешения Django.
                     name = f"Can {permission_name} {app_model}"
-                    print(f'Создание разрешения {name}')
+                    self.stdout.write(f'\tСоздание разрешения {name}...')
 
+                    # Проверка существования разрешения для добавления в группу
                     try:
                         model_add_perm = Permission.objects.get(name=name)
                     except Permission.DoesNotExist:
-                        logging.warning(f'Разрешение с именем "{name}" не найдено')
+                        logger.warning(f'Разрешение с именем "{name}" не найдено.')
+                        self.stdout.write(self.style.WARNING(f'\tРазрешение с именем "{name}" не найдено.'))
                         continue
 
+                    # Добавление разрешения к группе
                     new_group.permissions.add(model_add_perm)
+                    self.stdout.write('\tРазрешение добавлено к группе.')

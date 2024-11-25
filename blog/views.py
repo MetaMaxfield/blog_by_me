@@ -145,9 +145,9 @@ class PostDetailView(DetailView):
 class CommentsView(View):
     """Комментарии"""
 
-    def post(self, request: HttpRequest, pk: int) -> HttpResponseRedirect:
+    def post(self, request: HttpRequest, url: str) -> HttpResponseRedirect:
         form = CommentsForm(request.POST)
-        post = Post.objects.get(id=pk)
+        post = get_cached_objects_or_queryset(os.getenv('KEY_POST_DETAIL'), url)
         if form.is_valid():
             form = form.save(commit=False)
             if request.POST.get('parent', None):

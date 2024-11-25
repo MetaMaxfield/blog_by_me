@@ -14,7 +14,7 @@ urlpatterns = [
     # Страница с категориями
     path('categories/', views.CategoryView.as_view(), name='category_list'),
     # URL комментариев
-    path('comment/<int:pk>/', views.CommentsView.as_view(), name='add_comment'),
+    path('comment/<slug:url>/', views.CommentsView.as_view(), name='add_comment'),
     # Страница с видеозаписями
     path('videos/', views.VideosView.as_view(), name='video_list'),
     # URL видеозаписи

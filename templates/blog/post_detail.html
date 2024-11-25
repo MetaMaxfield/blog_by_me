@@ -128,7 +128,7 @@
 
                 <h2>{% trans 'Добавить комментарий' %}</h2>
 
-                <form action="{% url 'add_comment' post.id %}"
+                <form action="{% url 'add_comment' post.url %}"
                       class="comment-form row-fluid"
                       method="post" id="formComment">
 

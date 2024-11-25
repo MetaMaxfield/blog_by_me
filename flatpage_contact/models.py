@@ -1,5 +1,6 @@
 from django.contrib.flatpages.models import FlatPage
 from django.db import models
+from django.core.exceptions import ValidationError
 from phonenumber_field.modelfields import PhoneNumberField
 
 
@@ -15,6 +16,11 @@ class NewFlatpage(models.Model):
 
     def __str__(self):
         return self.flatpage.title
+
+    def save(self, *args, **kwargs):
+        if not self.pk and NewFlatpage.objects.exists():
+            raise ValidationError('Нельзя создать более одного экземпляра модели NewFlatpage.')
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'Содержание страницы'

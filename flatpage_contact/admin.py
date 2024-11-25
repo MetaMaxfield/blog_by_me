@@ -1,6 +1,7 @@
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from django import forms
 from django.contrib import admin
+from django.core.exceptions import ObjectDoesNotExist
 from modeltranslation.admin import TranslationAdmin
 
 from flatpage_contact.models import Contact, NewFlatpage
@@ -47,3 +48,11 @@ class FlatpageContactAdmin(TranslationAdmin):
         ('Электронная почта для связи', {'fields': ('email_contact',)}),
         ('Телефоны для связи', {'description': 'Пример: +79099099900', 'fields': (('phone1_num', 'phone2_num'),)}),
     )
+
+    def has_add_permission(self, request):
+        """Запрет на добавление объектов модели вне зависимости от статуса пользователя"""
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        """Запрет на удаление объектов модели вне зависимости от статуса пользователя"""
+        return False

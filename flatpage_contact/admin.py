@@ -49,6 +49,17 @@ class FlatpageContactAdmin(TranslationAdmin):
         ('Телефоны для связи', {'description': 'Пример: +79099099900', 'fields': (('phone1_num', 'phone2_num'),)}),
     )
 
+    def changelist_view(self, request, extra_context=None):
+        """
+        Перенаправление на страницу редактирования объекта модели About
+        при существовании единственного экземпляра модели
+        """
+        try:
+            new_flatpage = NewFlatpage.objects.get()
+            return self.change_view(request, object_id=str(new_flatpage.pk))
+        except ObjectDoesNotExist:
+            return super().changelist_view(request, extra_context=extra_context)
+
     def has_add_permission(self, request):
         """Запрет на добавление объектов модели вне зависимости от статуса пользователя"""
         return False

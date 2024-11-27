@@ -12,14 +12,9 @@ MARKS_LIST = [
         'id': 1,
         'nomination_ru': settings.RU_TITLE_DISLIKE_MARK,
         'nomination_en': settings.EN_TITLE_DISLIKE_MARK,
-        'value': -1
+        'value': -1,
     },
-    {
-        'id': 2,
-        'nomination_ru': settings.RU_TITLE_LIKE_MARK,
-        'nomination_en': settings.EN_TITLE_LIKE_MARK,
-        'value': 1
-    },
+    {'id': 2, 'nomination_ru': settings.RU_TITLE_LIKE_MARK, 'nomination_en': settings.EN_TITLE_LIKE_MARK, 'value': 1},
 ]
 
 
@@ -39,7 +34,7 @@ class Command(BaseCommand):
                 id=mark['id'],
                 nomination_ru=mark['nomination_ru'],
                 nomination_en=mark['nomination_en'],
-                value=mark['value']
+                value=mark['value'],
             )
 
             # Оповещение при создании объекта модели

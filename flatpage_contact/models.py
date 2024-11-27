@@ -1,6 +1,6 @@
 from django.contrib.flatpages.models import FlatPage
-from django.db import models
 from django.core.exceptions import ValidationError
+from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 
 

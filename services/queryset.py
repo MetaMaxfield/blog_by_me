@@ -2,7 +2,7 @@ import os
 from typing import NoReturn, Union
 
 from django.contrib.flatpages.models import FlatPage
-from django.db.models import Count, QuerySet, Sum, Prefetch, Q
+from django.db.models import Count, Prefetch, Q, QuerySet, Sum
 from django.db.models.functions import Coalesce
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -23,9 +23,7 @@ def _qs_post_list() -> QuerySet:
         .select_related(
             'category',
         )
-        .prefetch_related(
-            'tagged_items__tag', Prefetch('author', CustomUser.objects.only('username', 'id'))
-        )
+        .prefetch_related('tagged_items__tag', Prefetch('author', CustomUser.objects.only('username', 'id')))
         .defer('video', 'created', 'updated', 'draft')
         .annotate(ncomments=Count('comments'))
     )
@@ -36,7 +34,8 @@ def _qs_post_detail(slug: str) -> T | NoReturn:
     return get_object_or_404(
         Post.objects.filter(draft=False, publish__lte=timezone.now())
         .prefetch_related(Prefetch('author', CustomUser.objects.only('id', 'username')))
-        .annotate(ncomments=Count('comments')), url=slug
+        .annotate(ncomments=Count('comments')),
+        url=slug,
     )
 
 
@@ -76,14 +75,15 @@ def _qs_author_detail(pk: int) -> T | NoReturn:
         CustomUser.objects.annotate(
             nposts=Count('post_author', filter=Q(post_author__draft=False, post_author__publish__lte=timezone.now()))
         ),
-        id=pk
+        id=pk,
     )
 
 
 def _qs_top_posts() -> QuerySet:
     """QS с тремя самыми популярными постами"""
     return (
-        Post.objects.filter(draft=False, publish__lte=timezone.now()).only('title', 'body', 'url')
+        Post.objects.filter(draft=False, publish__lte=timezone.now())
+        .only('title', 'body', 'url')
         .alias(total_likes=Coalesce(Sum('rating_post__mark__value'), 0))
         .order_by('-total_likes')[:3]
     )
@@ -97,13 +97,7 @@ def _qs_last_posts() -> QuerySet:
 def _qs_all_tags() -> QuerySet:
     """QS с десятью популярными тегами по количеству использования"""
     return Tag.objects.annotate(
-        npost=Count(
-            'post_tags',
-            filter=Q(
-                post_tags__draft=False,
-                post_tags__publish__lte=timezone.now()
-            )
-        )
+        npost=Count('post_tags', filter=Q(post_tags__draft=False, post_tags__publish__lte=timezone.now()))
     ).order_by('-npost')[:10]
 
 
@@ -114,7 +108,7 @@ def _qs_days_posts_in_current_month() -> QuerySet:
         created__year=current_datetime.year,
         created__month=current_datetime.month,
         draft=False,
-        publish__lte=timezone.now()
+        publish__lte=timezone.now(),
     ).values_list('created__day')
 
 

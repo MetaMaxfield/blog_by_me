@@ -26,8 +26,7 @@ class CustomUser(AbstractUser):
     is_staff = models.BooleanField(
         verbose_name='Статус персонала',
         default=True,
-        help_text='Определяет, может ли пользователь войти '
-                  'на сайт администрирования.',
+        help_text='Определяет, может ли пользователь войти ' 'на сайт администрирования.',
     )
     email = models.EmailField(verbose_name="E-mail", blank=False)
 

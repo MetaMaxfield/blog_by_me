@@ -1,7 +1,7 @@
 import os
 
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, StreamingHttpResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect  # render
 from django.utils import timezone
 from django.views import View
 from django.views.generic import DetailView, ListView
@@ -9,12 +9,12 @@ from dotenv import load_dotenv
 
 from blog_by_me.settings import COUNT_POSTS_ON_PAGE
 from services import client_ip, rating, search, validator
-from services.blog.paginator import create_pagination
+
+# from services.blog.paginator import create_pagination
 from services.blog.video_player import open_file
 from services.caching import get_cached_objects_or_queryset
 
 from .forms import CommentsForm, RatingForm
-from .models import Post
 
 load_dotenv()
 

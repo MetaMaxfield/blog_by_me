@@ -1,12 +1,13 @@
 import os
+
 from django.db.models import F
 from django.http import HttpRequest
+from dotenv import load_dotenv
 
 from blog.models import Mark, Rating
+from blog_by_me.settings import RU_TITLE_LIKE_MARK
 from services.caching import get_cached_objects_or_queryset
 from services.client_ip import get_client_ip
-from blog_by_me.settings import RU_TITLE_LIKE_MARK
-from dotenv import load_dotenv
 
 load_dotenv()
 

@@ -385,3 +385,10 @@ COUNT_POSTS_ON_PAGE = 3
 # Названия групп пользователей
 TITLE_MODERATOR_GROUP = 'Модератор'
 TITLE_AUTHOR_GROUP = 'Автор'
+
+
+# Названия оценок для рейтинга постов
+RU_TITLE_LIKE_MARK = 'Лайк'
+EN_TITLE_LIKE_MARK = 'Like'
+RU_TITLE_DISLIKE_MARK = 'Дизлайк'
+EN_TITLE_DISLIKE_MARK = 'Dislike'

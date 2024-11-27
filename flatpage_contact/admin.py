@@ -28,6 +28,10 @@ class ContactAdmin(admin.ModelAdmin):
     list_editable = ('feedback',)
     readonly_fields = ('name', 'email', 'phone', 'date', 'message')
 
+    def has_add_permission(self, request):
+        """Запрет на добавление объектов модели вне зависимости от статуса пользователя"""
+        return False
+
 
 @admin.register(NewFlatpage)
 class FlatpageContactAdmin(TranslationAdmin):

@@ -6,6 +6,8 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from taggit.models import Tag
 
+from blog_by_me.settings import LANGUAGES
+
 
 def search_by_tag(tag_slug: str, object_list: QuerySet) -> Tuple[Tag, QuerySet]:
     """
@@ -35,7 +37,7 @@ def search_by_q(q: str, object_list: QuerySet, current_language: str) -> QuerySe
     Поиск по названию и содержанию в зависимости от выбранного языка,
     сортировка результатов поиска с использованием специальных классов для PostgeSQL
     """
-    if current_language == 'ru':
+    if current_language == LANGUAGES[0][0]:
         search_vector = SearchVector('title_ru', 'body_ru')
     else:
         search_vector = SearchVector('title_en', 'body_en')

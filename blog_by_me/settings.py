@@ -376,6 +376,22 @@ CACHES = {
 }
 
 
+# Время кэширования для разных типов данных
+CACHE_TIMES = {
+    os.getenv('KEY_POSTS_LIST'): 300,  # 5 минут для списка постов
+    os.getenv('KEY_POST_DETAIL'): 600,  # 10 минут для отдельного поста
+    os.getenv('KEY_CATEGORIES_LIST'): 3600,  # 1 час для списка категорий
+    os.getenv('KEY_VIDEOS_LIST'): 600,  # 10 минут для списка видеозаписей
+    os.getenv('KEY_CONTACT_FLATPAGE'): 86400,  # 1 день для содержания плоской страницы "О нас"
+    os.getenv('KEY_AUTHORS_LIST'): 3600,  # 1 час для списка авторов
+    os.getenv('KEY_AUTHOR_DETAIL'): 600,  # 10 минут для отдельного автора
+    os.getenv('KEY_TOP_POSTS'): 900,  # 15 минут для трёх самых популярных постов
+    os.getenv('KEY_LAST_POSTS'): 300,  # 5 минут для трёх последних постов
+    os.getenv('KEY_ALL_TAGS'): 1800,  # 30 миннут для десяти популярных тегов
+    os.getenv('KEY_POSTS_CALENDAR'): 3600,  # 1 час для списка с днями публикации постов
+}
+
+
 # Аннотация типа данных
 T = TypeVar('T', bound=Model)
 

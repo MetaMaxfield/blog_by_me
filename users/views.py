@@ -24,9 +24,11 @@ load_dotenv()
 class AuthorsView(ListView):
     """Список пользователей"""
 
-    queryset = get_cached_objects_or_queryset(os.getenv('KEY_AUTHORS_LIST'))
     context_object_name = 'authors'
     template_name = 'users/author_list.html'
+
+    def get_queryset(self):
+        return get_cached_objects_or_queryset(os.getenv('KEY_AUTHORS_LIST'))
 
 
 # class AuthorDetailView(View):

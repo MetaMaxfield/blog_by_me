@@ -34,8 +34,10 @@ load_dotenv()
 class PostsView(ListView):
     """Посты блога"""
 
-    queryset = get_cached_objects_or_queryset(os.getenv('KEY_POSTS_LIST'))
     paginate_by = COUNT_POSTS_ON_PAGE
+
+    def get_queryset(self):
+        return get_cached_objects_or_queryset(os.getenv('KEY_POSTS_LIST'))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -62,11 +64,10 @@ class PostsView(ListView):
 class PostsFilterDateView(ListView):
     """Посты блога с фильтрацией по дате"""
 
-    queryset = get_cached_objects_or_queryset(os.getenv('KEY_POSTS_LIST'))
     paginate_by = COUNT_POSTS_ON_PAGE
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = get_cached_objects_or_queryset(os.getenv('KEY_POSTS_LIST'))
         return search.search_by_date(self.kwargs['date_posts'], queryset)
 
     def get_context_data(self, **kwargs):
@@ -95,11 +96,10 @@ class PostsFilterDateView(ListView):
 class PostsFilterTagView(ListView):
     """Посты блога с фильтрацией по тегу"""
 
-    queryset = get_cached_objects_or_queryset(os.getenv('KEY_POSTS_LIST'))
     paginate_by = COUNT_POSTS_ON_PAGE
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = get_cached_objects_or_queryset(os.getenv('KEY_POSTS_LIST'))
         self.tag, queryset = search.search_by_tag(self.kwargs['tag_slug'], queryset)
         return queryset
 
@@ -171,8 +171,10 @@ class CommentsView(View):
 class CategoryView(ListView):
     """Категории"""
 
-    queryset = get_cached_objects_or_queryset(os.getenv('KEY_CATEGORIES_LIST'))
     context_object_name = 'categories'
+
+    def get_queryset(self):
+        return get_cached_objects_or_queryset(os.getenv('KEY_CATEGORIES_LIST'))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -199,12 +201,11 @@ class CategoryView(ListView):
 class SearchView(ListView):
     """Поиск"""
 
-    queryset = get_cached_objects_or_queryset(os.getenv('KEY_POSTS_LIST'))
     paginate_by = COUNT_POSTS_ON_PAGE
 
     def get_queryset(self):
         self.q = self.request.GET.get('q')
-        queryset = super().get_queryset()
+        queryset = get_cached_objects_or_queryset(os.getenv('KEY_POSTS_LIST'))
         current_language = self.request.LANGUAGE_CODE
         return search.search_by_q(self.q, queryset, current_language)
 
@@ -228,7 +229,8 @@ class SearchView(ListView):
 class VideosView(ListView):
     """Видеозаписи блога"""
 
-    queryset = get_cached_objects_or_queryset(os.getenv('KEY_VIDEOS_LIST'))
+    def get_queryset(self):
+        return get_cached_objects_or_queryset(os.getenv('KEY_VIDEOS_LIST'))
 
 
 class VideoPlayView(View):

@@ -16,7 +16,7 @@ def _get_cache_time(qs_key: str) -> int:
     return CACHE_TIMES.get(qs_key, 300)
 
 
-def get_cached_objects_or_queryset(qs_key: str, slug_or_pk: Union[str, int, None] = None) -> Union[QuerySet, T]:
+def get_cached_objects_or_queryset(qs_key: str, slug_or_pk: Union[str, int] = '') -> Union[QuerySet, T]:
     """Получения кэша или вызов QS"""
     cache_key = os.getenv('CACHE_KEY')
     object_list_or_object = cache.get(f'{cache_key}{qs_key}{slug_or_pk}')

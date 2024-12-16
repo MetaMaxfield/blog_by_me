@@ -117,7 +117,7 @@ def not_definite_qs(*args: tuple) -> NoReturn:
     raise Exception('Ключ для получения queryset не найден.')
 
 
-def qs_definition(qs_key: str, slug_or_pk: Union[str, int, None]) -> Union[QuerySet, T, NoReturn]:
+def qs_definition(qs_key: str, slug_or_pk: Union[str, int]) -> Union[QuerySet, T, NoReturn]:
     """Определение необходимого запроса в БД по ключу"""
     qs_keys = {
         os.getenv('KEY_POSTS_LIST'): _qs_post_list,

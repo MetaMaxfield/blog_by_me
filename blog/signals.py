@@ -1,7 +1,42 @@
-from django.db.models.signals import post_delete, pre_save
+import os
+
+from django.core.cache import cache
+from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch.dispatcher import receiver
+from dotenv import load_dotenv
 
 from blog.models import Post, Video
+
+load_dotenv()
+
+
+def _clear_cache_post(instance):
+    """Функция для очистки кэша с данными постов"""
+
+    # Получаем общий ключ для кэша из переменных окружения
+    cache_key = os.getenv('CACHE_KEY')
+
+    # Список ключей для кэширования объектов, которые нужно очистить
+    keys_list_objects = [
+        os.getenv('KEY_POSTS_LIST'),
+        os.getenv('KEY_LAST_POSTS'),
+    ]
+    # Если у поста есть видео, добавляем ключ для кэширования видеозаписей в список для очистки кэша
+    if instance.video:
+        keys_list_objects.append(os.getenv('KEY_VIDEOS_LIST'))
+
+    # Удаляем кэш для каждого ключа из списка
+    for key in keys_list_objects:
+        cache.delete(f'{cache_key}{key}')
+
+    # Удаляем кэш для отдельного поста по его URL
+    cache.delete(f'{cache_key}{os.getenv("KEY_POST_DETAIL")}{instance.url}')
+
+
+@receiver(post_delete, sender=Post)
+def clear_cache_when_deleting_post(sender, instance, **kwargs):
+    """Вызывает функцию для удаления старых данных из кэша при удалении поста"""
+    _clear_cache_post(instance)
 
 
 @receiver(post_delete, sender=Post)
@@ -18,6 +53,13 @@ def post_image_file_delete_when_replace(sender, instance, **kwargs):
         old_instance = Post.objects.get(id=instance.id)
         if old_instance.image != instance.image:
             old_instance.image.delete(save=False)
+
+
+@receiver(post_save, sender=Post)
+def clear_cache_when_draft_post(sender, instance, **kwargs):
+    """Вызывает функцию для удаления старых данных из кэша при скрытии поста поста (draft=True)"""
+    if instance.draft:
+        _clear_cache_post(instance)
 
 
 @receiver(post_delete, sender=Video)

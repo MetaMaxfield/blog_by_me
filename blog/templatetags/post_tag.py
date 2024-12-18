@@ -1,4 +1,3 @@
-import os
 from calendar import Calendar
 from datetime import datetime
 from typing import Union
@@ -7,6 +6,7 @@ from django import template
 from django.db.models import QuerySet
 from django.utils import timezone
 
+from blog_by_me import settings
 from services.caching import get_cached_objects_or_queryset
 from services.template_tags import add_posts_days_in_list
 
@@ -18,7 +18,7 @@ def top_posts() -> dict[str, QuerySet]:
     """
     Шаблонный тег, отображающий популярные посты блога в зависимости от рейтинга
     """
-    top_list = get_cached_objects_or_queryset(os.getenv('KEY_TOP_POSTS'))
+    top_list = get_cached_objects_or_queryset(settings.KEY_TOP_POSTS)
     return {'top_list': top_list}
 
 
@@ -27,7 +27,7 @@ def last_posts() -> dict[str, QuerySet]:
     """
     Шаблонный тег, отображающий последние добавленные посты в блоге
     """
-    last_posts = get_cached_objects_or_queryset(os.getenv('KEY_LAST_POSTS'))
+    last_posts = get_cached_objects_or_queryset(settings.KEY_LAST_POSTS)
     return {'last_posts': last_posts}
 
 
@@ -36,7 +36,7 @@ def all_tags() -> dict[str, QuerySet]:
     """
     Шаблонный тег, отображающий все теги постов в блоге и их количество
     """
-    all_tags = get_cached_objects_or_queryset(os.getenv('KEY_ALL_TAGS'))
+    all_tags = get_cached_objects_or_queryset(settings.KEY_ALL_TAGS)
     return {'all_tags': all_tags}
 
 
@@ -45,7 +45,7 @@ def calendar() -> dict[str, Union[list[list[int]]], datetime, set]:
     """
     Шаблонный тег, отображающий календарь
     """
-    qs_calendar = get_cached_objects_or_queryset(os.getenv('KEY_POSTS_CALENDAR'))
+    qs_calendar = get_cached_objects_or_queryset(settings.KEY_POSTS_CALENDAR)
     current_datetime = timezone.now()
     return {
         'month': Calendar().monthdayscalendar(current_datetime.year, current_datetime.month),

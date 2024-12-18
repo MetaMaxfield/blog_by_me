@@ -367,6 +367,25 @@ INTERNAL_IPS = [
 ]
 
 
+# Ключи для кэширования данных (функция get_cached_objects_or_queryset)
+# и определения необходимого запроса к БД (функция qs_definition)
+KEY_POSTS_LIST = os.getenv('KEY_POSTS_LIST')
+KEY_POST_DETAIL = os.getenv('KEY_POST_DETAIL')
+KEY_CATEGORIES_LIST = os.getenv('KEY_CATEGORIES_LIST')
+KEY_VIDEOS_LIST = os.getenv('KEY_VIDEOS_LIST')
+KEY_CONTACT_FLATPAGE = os.getenv('KEY_CONTACT_FLATPAGE')
+KEY_AUTHORS_LIST = os.getenv('KEY_AUTHORS_LIST')
+KEY_AUTHOR_DETAIL = os.getenv('KEY_AUTHOR_DETAIL')
+KEY_TOP_POSTS = os.getenv('KEY_TOP_POSTS')
+KEY_LAST_POSTS = os.getenv('KEY_LAST_POSTS')
+KEY_ALL_TAGS = os.getenv('KEY_ALL_TAGS')
+KEY_POSTS_CALENDAR = os.getenv('KEY_POSTS_CALENDAR')
+
+
+# Ключ-префикс для других ключей (используется в функции кэширования get_cached_objects_or_queryset)
+CACHE_KEY = os.getenv('CACHE_KEY')
+
+
 # Настройки кэша
 CACHES = {
     'default': {
@@ -378,17 +397,17 @@ CACHES = {
 
 # Время кэширования для разных типов данных
 CACHE_TIMES = {
-    os.getenv('KEY_POSTS_LIST'): 300,  # 5 минут для списка постов
-    os.getenv('KEY_POST_DETAIL'): 600,  # 10 минут для отдельного поста
-    os.getenv('KEY_CATEGORIES_LIST'): 3600,  # 1 час для списка категорий
-    os.getenv('KEY_VIDEOS_LIST'): 600,  # 10 минут для списка видеозаписей
-    os.getenv('KEY_CONTACT_FLATPAGE'): 86400,  # 1 день для содержания плоской страницы "О нас"
-    os.getenv('KEY_AUTHORS_LIST'): 3600,  # 1 час для списка авторов
-    os.getenv('KEY_AUTHOR_DETAIL'): 600,  # 10 минут для отдельного автора
-    os.getenv('KEY_TOP_POSTS'): 900,  # 15 минут для трёх самых популярных постов
-    os.getenv('KEY_LAST_POSTS'): 300,  # 5 минут для трёх последних постов
-    os.getenv('KEY_ALL_TAGS'): 1800,  # 30 миннут для десяти популярных тегов
-    os.getenv('KEY_POSTS_CALENDAR'): 3600,  # 1 час для списка с днями публикации постов
+    KEY_POSTS_LIST: 300,  # 5 минут для списка постов
+    KEY_POST_DETAIL: 600,  # 10 минут для отдельного поста
+    KEY_CATEGORIES_LIST: 3600,  # 1 час для списка категорий
+    KEY_VIDEOS_LIST: 600,  # 10 минут для списка видеозаписей
+    KEY_CONTACT_FLATPAGE: 86400,  # 1 день для содержания плоской страницы "О нас"
+    KEY_AUTHORS_LIST: 3600,  # 1 час для списка авторов
+    KEY_AUTHOR_DETAIL: 600,  # 10 минут для отдельного автора
+    KEY_TOP_POSTS: 900,  # 15 минут для трёх самых популярных постов
+    KEY_LAST_POSTS: 300,  # 5 минут для трёх последних постов
+    KEY_ALL_TAGS: 1800,  # 30 миннут для десяти популярных тегов
+    KEY_POSTS_CALENDAR: 3600,  # 1 час для списка с днями публикации постов
 }
 
 

@@ -1,15 +1,11 @@
-import os
-
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.views import View
-from dotenv import load_dotenv
 
+from blog_by_me.settings import KEY_CONTACT_FLATPAGE
 from flatpage_contact.forms import ContactForm
 from services.caching import get_cached_objects_or_queryset
 from services.flatpage_contact.send_mail import send
-
-load_dotenv()
 
 
 class ExtensionFlatpageView(View):
@@ -19,7 +15,7 @@ class ExtensionFlatpageView(View):
         return render(
             request,
             'pages/contact.html',
-            {'form': ContactForm(), 'flatpage': get_cached_objects_or_queryset(os.getenv('KEY_CONTACT_FLATPAGE'))},
+            {'form': ContactForm(), 'flatpage': get_cached_objects_or_queryset(KEY_CONTACT_FLATPAGE)},
         )
 
 

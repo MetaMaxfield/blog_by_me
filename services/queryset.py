@@ -1,4 +1,3 @@
-import os
 from typing import NoReturn, Union
 
 from django.contrib.flatpages.models import FlatPage
@@ -6,14 +5,11 @@ from django.db.models import Count, Prefetch, Q, QuerySet, Sum
 from django.db.models.functions import Coalesce
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from dotenv import load_dotenv
 from taggit.models import Tag
 
 from blog.models import Category, Post, Video
-from blog_by_me.settings import T
+from blog_by_me import settings
 from users.models import CustomUser
-
-load_dotenv()
 
 
 def _qs_post_list() -> QuerySet:
@@ -29,7 +25,7 @@ def _qs_post_list() -> QuerySet:
     )
 
 
-def _qs_post_detail(slug: str) -> T | NoReturn:
+def _qs_post_detail(slug: str) -> settings.T | NoReturn:
     """Отдельная запись в блоге"""
     return get_object_or_404(
         Post.objects.filter(draft=False, publish__lte=timezone.now())
@@ -57,7 +53,7 @@ def _qs_videos_list() -> QuerySet:
     )
 
 
-def _qs_contact_flatpage() -> T | NoReturn:
+def _qs_contact_flatpage() -> settings.T | NoReturn:
     """
     Получение плоской страницы 'О нас'
     """
@@ -69,7 +65,7 @@ def _qs_author_list() -> QuerySet:
     return CustomUser.objects.all().only('id', 'username', 'image', 'description')
 
 
-def _qs_author_detail(pk: int) -> T | NoReturn:
+def _qs_author_detail(pk: int) -> settings.T | NoReturn:
     """QS с отдельным автором"""
     return get_object_or_404(
         CustomUser.objects.annotate(
@@ -117,20 +113,20 @@ def not_definite_qs(*args: tuple) -> NoReturn:
     raise Exception('Ключ для получения queryset не найден.')
 
 
-def qs_definition(qs_key: str, slug_or_pk: Union[str, int]) -> Union[QuerySet, T, NoReturn]:
+def qs_definition(qs_key: str, slug_or_pk: Union[str, int]) -> Union[QuerySet, settings.T, NoReturn]:
     """Определение необходимого запроса в БД по ключу"""
     qs_keys = {
-        os.getenv('KEY_POSTS_LIST'): _qs_post_list,
-        os.getenv('KEY_POST_DETAIL'): _qs_post_detail,
-        os.getenv('KEY_CATEGORIES_LIST'): _qs_categories_list,
-        os.getenv('KEY_VIDEOS_LIST'): _qs_videos_list,
-        os.getenv('KEY_CONTACT_FLATPAGE'): _qs_contact_flatpage,
-        os.getenv('KEY_AUTHORS_LIST'): _qs_author_list,
-        os.getenv('KEY_AUTHOR_DETAIL'): _qs_author_detail,
-        os.getenv('KEY_TOP_POSTS'): _qs_top_posts,
-        os.getenv('KEY_LAST_POSTS'): _qs_last_posts,
-        os.getenv('KEY_ALL_TAGS'): _qs_all_tags,
-        os.getenv('KEY_POSTS_CALENDAR'): _qs_days_posts_in_current_month,
+        settings.KEY_POSTS_LIST: _qs_post_list,
+        settings.KEY_POST_DETAIL: _qs_post_detail,
+        settings.KEY_CATEGORIES_LIST: _qs_categories_list,
+        settings.KEY_VIDEOS_LIST: _qs_videos_list,
+        settings.KEY_CONTACT_FLATPAGE: _qs_contact_flatpage,
+        settings.KEY_AUTHORS_LIST: _qs_author_list,
+        settings.KEY_AUTHOR_DETAIL: _qs_author_detail,
+        settings.KEY_TOP_POSTS: _qs_top_posts,
+        settings.KEY_LAST_POSTS: _qs_last_posts,
+        settings.KEY_ALL_TAGS: _qs_all_tags,
+        settings.KEY_POSTS_CALENDAR: _qs_days_posts_in_current_month,
     }
     definite_qs = qs_keys.get(qs_key, not_definite_qs)
     return definite_qs(slug_or_pk) if slug_or_pk else definite_qs()

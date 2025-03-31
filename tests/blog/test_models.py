@@ -1,8 +1,13 @@
+from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.validators import FileExtensionValidator
+from django.db.models import CASCADE, SET_NULL, Index
 from django.test import TestCase
+from django.utils import timezone
+from taggit.models import Tag
 
-from blog.models import Category, Video
+from blog.models import Category, Comment, Post, Video
+from blog_by_me.settings import LANGUAGE_CODE
 
 
 class CategoryModelTest(TestCase):
@@ -107,3 +112,204 @@ class VideoModelTest(TestCase):
     def test_model_verbose_name_plural(self):
         fact_verbose_name_plural = self.video._meta.verbose_name_plural
         self.assertEqual(fact_verbose_name_plural, 'Видеозаписи')
+
+
+class PostModelTest(TestCase):
+    """Тестирование модели Post"""
+
+    @classmethod
+    def setUpTestData(cls):
+        author = get_user_model().objects.create(
+            username='Maximus', description='Описание пользователя', email='maximus@gmail.com'
+        )
+        category = Category.objects.create(name='Развлечения', description='Описание категории', url='entertainment')
+
+        cls.post = Post.objects.create(
+            title='Как я провёл отпуск',
+            url='kak-ya-provel-otpusk',
+            author=author,
+            category=category,
+            body='Содержание событий в отпуске',
+            image=SimpleUploadedFile("fishing.jpeg", b"fake image content", content_type="image/jpeg"),
+        )
+
+    @classmethod
+    def setUp(cls):
+        cls.post = Post.objects.get(title='Как я провёл отпуск')
+
+    def test_title_verbose_name(self):
+        fact_verbose_name = self.post._meta.get_field('title').verbose_name
+        self.assertEqual(fact_verbose_name, 'Заголовок')
+
+    def test_title_max_length(self):
+        fact_max_length = self.post._meta.get_field('title').max_length
+        self.assertEqual(fact_max_length, 250)
+
+    def test_url_max_length(self):
+        fact_max_length = self.post._meta.get_field('url').max_length
+        self.assertEqual(fact_max_length, 25)
+
+    def test_url_unique(self):
+        fact_unique = self.post._meta.get_field('url').unique
+        self.assertTrue(fact_unique)
+
+    def test_author_to_model(self):
+        fact_to_model = self.post._meta.get_field('author').remote_field.model
+        self.assertEqual(fact_to_model, get_user_model())
+
+    def test_author_verbose_name(self):
+        fact_verbose_name = self.post._meta.get_field('author').verbose_name
+        self.assertEqual(fact_verbose_name, 'Автор')
+
+    def test_author_on_delete(self):
+        fact_on_delete = self.post._meta.get_field('author').remote_field.on_delete
+        self.assertEqual(fact_on_delete, CASCADE)
+
+    def test_author_related_name(self):
+        fact_related_name = self.post._meta.get_field('author').remote_field.related_name
+        self.assertEqual(fact_related_name, 'post_author')
+
+    def test_category_to_model(self):
+        fact_to_model = self.post._meta.get_field('category').remote_field.model
+        self.assertEqual(fact_to_model, Category)
+
+    def test_category_verbose_name(self):
+        fact_verbose_name = self.post._meta.get_field('category').verbose_name
+        self.assertEqual(fact_verbose_name, 'Категория')
+
+    def test_category_related_name(self):
+        fact_related_name = self.post._meta.get_field('category').remote_field.related_name
+        self.assertEqual(fact_related_name, 'post_category')
+
+    def test_category_on_delete(self):
+        fact_on_delete = self.post._meta.get_field('category').remote_field.on_delete
+        self.assertEqual(fact_on_delete, SET_NULL)
+
+    def test_tags_to_model(self):
+        fact_to_model = self.post._meta.get_field('tags').remote_field.model
+        self.assertEqual(fact_to_model, Tag)
+
+    def test_tags_related_name(self):
+        fact_related_name = self.post._meta.get_field('tags').remote_field.related_name
+        self.assertEqual(fact_related_name, 'post_tags')
+
+    def test_body_verbose_name(self):
+        fact_verbose_name = self.post._meta.get_field('body').verbose_name
+        self.assertEqual(fact_verbose_name, 'Содержание')
+
+    def test_video_to_model(self):
+        fact_to_model = self.post._meta.get_field('video').remote_field.model
+        self.assertEqual(fact_to_model, Video)
+
+    def test_video_verbose_name(self):
+        fact_verbose_name = self.post._meta.get_field('video').verbose_name
+        self.assertEqual(fact_verbose_name, 'Видео к записи')
+
+    def test_video_related_name(self):
+        fact_related_name = self.post._meta.get_field('video').remote_field.related_name
+        self.assertEqual(fact_related_name, 'post_video')
+
+    def test_video_on_delete(self):
+        fact_on_delete = self.post._meta.get_field('video').remote_field.on_delete
+        self.assertEqual(fact_on_delete, SET_NULL)
+
+    def test_video_null(self):
+        fact_null = self.post._meta.get_field('video').null
+        self.assertTrue(fact_null)
+
+    def test_video_blank(self):
+        fact_blank = self.post._meta.get_field('video').blank
+        self.assertTrue(fact_blank)
+
+    def test_image_verbose_name(self):
+        fact_verbose_name = self.post._meta.get_field('image').verbose_name
+        self.assertEqual(fact_verbose_name, 'Изображение')
+
+    def test_image_upload_to(self):
+        fact_upload_to = self.post._meta.get_field('image').upload_to
+        self.assertEqual(fact_upload_to, 'posts/')
+
+    def test_publish_default(self):
+        fact_default = self.post._meta.get_field('publish').default
+        self.assertEqual(fact_default, timezone.now)
+
+    def test_publish_help_text(self):
+        fact_help_text = self.post._meta.get_field('publish').help_text
+        expected_help_text = (
+            'Укажите дату и время, когда пост должен быть опубликован. '
+            'Оставьте текущую дату и время для немедленной публикации, '
+            'либо выберите будущую дату для отложенного поста. '
+            'Обратите внимание: изменить время публикации можно будет только '
+            'до наступления ранее указанного времени.'
+        )
+        self.assertEqual(fact_help_text, expected_help_text)
+
+    def test_publish_verbose_name(self):
+        fact_verbose_name = self.post._meta.get_field('publish').verbose_name
+        self.assertEqual(fact_verbose_name, 'Время публикации')
+
+    def test_created_auto_now_add(self):
+        fact_auto_now_add = self.post._meta.get_field('created').auto_now_add
+        self.assertTrue(fact_auto_now_add)
+
+    def test_updated_auto_now(self):
+        fact_auto_now = self.post._meta.get_field('updated').auto_now
+        self.assertTrue(fact_auto_now)
+
+    def test_draft_default(self):
+        fact_default = self.post._meta.get_field('draft').default
+        self.assertFalse(fact_default)
+
+    def test_draft_verbose_name(self):
+        fact_verbose_name = self.post._meta.get_field('draft').verbose_name
+        self.assertEqual(fact_verbose_name, 'Черновик')
+
+    def test_object_name_is_title(self):
+        expected_object_name = self.post.title
+        self.assertEqual(str(self.post), expected_object_name)
+
+    def test_get_absolute_url(self):
+        fact_url = self.post.get_absolute_url()
+        expected_url = f'/{LANGUAGE_CODE}/{self.post.url}/'
+        self.assertEquals(fact_url, expected_url)
+
+    def test_get_comment(self):
+        comment1 = Comment.objects.create(
+            post=self.post, name='Комментатор 1', email='com1@gmail.com', text='Текст комментария 1'
+        )
+        Comment.objects.create(
+            post=self.post, name='Комментатор 2', email='com2@gmail.com', text='Текст комментария 2', active=False
+        )
+        Comment.objects.create(
+            post=self.post, name='Комментатор 3', email='com3@gmail.com', text='Ответ на комментарий 1', parent=comment1
+        )
+
+        # проверка фильтров в тестируемом методе
+        fact_comments_to_post = self.post.get_comment()
+        expected_comments_to_post = [
+            comment1,
+        ]
+        self.assertQuerySetEqual(fact_comments_to_post, expected_comments_to_post)
+
+        # проверка что для дочерних комментариев используется предзагрузка через .prefetch_related()
+        for comment in fact_comments_to_post:
+            self.assertIn('parent_comments', getattr(comment, '_prefetched_objects_cache', {}))
+
+    def test_model_verbose_name(self):
+        fact_verbose_name = self.post._meta.verbose_name
+        self.assertEqual(fact_verbose_name, 'Пост')
+
+    def test_model_verbose_name_plural(self):
+        fact_verbose_name_plural = self.post._meta.verbose_name_plural
+        self.assertEqual(fact_verbose_name_plural, 'Посты')
+
+    def test_model_indexes(self):
+        fact_indexes = self.post._meta.indexes
+        expected_indexes = [
+            Index(fields=('-publish', '-id'), name='publish_id_idx'),
+        ]
+        self.assertEqual(fact_indexes, expected_indexes)
+
+    def test_model_ordering(self):
+        fact_ordering = self.post._meta.ordering
+        self.assertEqual(fact_ordering, ('-publish', '-id'))

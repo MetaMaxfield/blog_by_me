@@ -6,7 +6,7 @@ from django.test import TestCase
 from django.utils import timezone
 from taggit.models import Tag
 
-from blog.models import Category, Comment, Mark, Post, Video
+from blog.models import Category, Comment, Mark, Post, Rating, Video
 from blog_by_me.settings import LANGUAGE_CODE
 
 
@@ -470,3 +470,77 @@ class MarkModelTest(TestCase):
     def test_model_ordering(self):
         fact_ordering = self.mark._meta.ordering
         self.assertEqual(fact_ordering, ('value',))
+
+
+class RatingModelTest(TestCase):
+    """Тестирование модели Rating"""
+
+    @classmethod
+    def setUpTestData(cls):
+        author = get_user_model().objects.create(
+            username='Maximus', description='Описание пользователя', email='maximus@gmail.com'
+        )
+        category = Category.objects.create(name='Развлечения', description='Описание категории', url='entertainment')
+        post = Post.objects.create(
+            title='Как я провёл отпуск',
+            url='kak-ya-provel-otpusk',
+            author=author,
+            category=category,
+            body='Содержание событий в отпуске',
+            image=SimpleUploadedFile("fishing.jpeg", b"fake image content", content_type="image/jpeg"),
+        )
+        mark = Mark.objects.create(nomination='Лайк', value=1)
+
+        Rating.objects.create(ip='127.0.0.1', mark=mark, post=post)
+
+    @classmethod
+    def setUp(cls):
+        cls.rating = Rating.objects.get(ip='127.0.0.1', post__url='kak-ya-provel-otpusk')
+
+    def test_ip_verbose_name(self):
+        fact_verbose_name = self.rating._meta.get_field('ip').verbose_name
+        self.assertEqual(fact_verbose_name, 'IP адрес')
+
+    def test_ip_max_length(self):
+        fact_max_length = self.rating._meta.get_field('ip').max_length
+        self.assertEqual(fact_max_length, 15)
+
+    def test_mark_to_model(self):
+        fact_to_model = self.rating._meta.get_field('mark').remote_field.model
+        self.assertEqual(fact_to_model, Mark)
+
+    def test_mark_verbose_name(self):
+        fact_verbose_name = self.rating._meta.get_field('mark').verbose_name
+        self.assertEqual(fact_verbose_name, 'Оценка')
+
+    def test_mark_on_delete(self):
+        fact_on_delete = self.rating._meta.get_field('mark').remote_field.on_delete
+        self.assertEqual(fact_on_delete, CASCADE)
+
+    def test_post_to_model(self):
+        fact_to_model = self.rating._meta.get_field('post').remote_field.model
+        self.assertEqual(fact_to_model, Post)
+
+    def test_post_verbose_name(self):
+        fact_verbose_name = self.rating._meta.get_field('post').verbose_name
+        self.assertEqual(fact_verbose_name, 'Пост')
+
+    def test_post_on_delete(self):
+        fact_on_delete = self.rating._meta.get_field('post').remote_field.on_delete
+        self.assertEqual(fact_on_delete, CASCADE)
+
+    def test_post_related_name(self):
+        fact_related_name = self.rating._meta.get_field('post').remote_field.related_name
+        self.assertEqual(fact_related_name, 'rating_post')
+
+    def test_object_name_is_mark(self):
+        expected_object_name = str(self.rating.mark)
+        self.assertEqual(str(self.rating), expected_object_name)
+
+    def test_model_verbose_name(self):
+        fact_verbose_name = self.rating._meta.verbose_name
+        self.assertEqual(fact_verbose_name, 'Рейтинг')
+
+    def test_model_verbose_name_plural(self):
+        fact_verbose_name_plural = self.rating._meta.verbose_name_plural
+        self.assertEqual(fact_verbose_name_plural, 'Рейтинги')

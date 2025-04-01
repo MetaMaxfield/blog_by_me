@@ -6,7 +6,7 @@ from django.test import TestCase
 from django.utils import timezone
 from taggit.models import Tag
 
-from blog.models import Category, Comment, Post, Video
+from blog.models import Category, Comment, Mark, Post, Video
 from blog_by_me.settings import LANGUAGE_CODE
 
 
@@ -426,3 +426,47 @@ class CommentModelTest(TestCase):
     def test_model_ordering(self):
         fact_ordering = self.comment._meta.ordering
         self.assertEqual(fact_ordering, ('created',))
+
+
+class MarkModelTest(TestCase):
+    """Тестирование модели Mark"""
+
+    @classmethod
+    def setUpTestData(cls):
+        Mark.objects.create(nomination='Лайк', value=1)
+
+    @classmethod
+    def setUp(cls):
+        cls.mark = Mark.objects.get(nomination='Лайк')
+
+    def test_nomination_verbose_name(self):
+        fact_verbose_name = self.mark._meta.get_field('nomination').verbose_name
+        self.assertEqual(fact_verbose_name, 'Наименование')
+
+    def test_nomination_max_length(self):
+        fact_max_length = self.mark._meta.get_field('nomination').max_length
+        self.assertEqual(fact_max_length, 10)
+
+    def test_value_verbose_name(self):
+        fact_verbose_name = self.mark._meta.get_field('value').verbose_name
+        self.assertEqual(fact_verbose_name, 'Значение')
+
+    def test_value_default(self):
+        fact_default = self.mark._meta.get_field('value').default
+        self.assertEqual(fact_default, 0)
+
+    def test_object_name_is_nomination(self):
+        expected_object_name = self.mark.nomination
+        self.assertEqual(str(self.mark), expected_object_name)
+
+    def test_model_verbose_name(self):
+        fact_verbose_name = self.mark._meta.verbose_name
+        self.assertEqual(fact_verbose_name, 'Значение рейтинга')
+
+    def test_model_verbose_name_plural(self):
+        fact_verbose_name_plural = self.mark._meta.verbose_name_plural
+        self.assertEqual(fact_verbose_name_plural, 'Значения рейтинга')
+
+    def test_model_ordering(self):
+        fact_ordering = self.mark._meta.ordering
+        self.assertEqual(fact_ordering, ('value',))

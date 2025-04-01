@@ -313,3 +313,116 @@ class PostModelTest(TestCase):
     def test_model_ordering(self):
         fact_ordering = self.post._meta.ordering
         self.assertEqual(fact_ordering, ('-publish', '-id'))
+
+
+class CommentModelTest(TestCase):
+    """Тестирование модели Comment"""
+
+    @classmethod
+    def setUpTestData(cls):
+        author = get_user_model().objects.create(
+            username='Maximus', description='Описание пользователя', email='maximus@gmail.com'
+        )
+        category = Category.objects.create(name='Развлечения', description='Описание категории', url='entertainment')
+        post = Post.objects.create(
+            title='Как я провёл отпуск',
+            url='kak-ya-provel-otpusk',
+            author=author,
+            category=category,
+            body='Содержание событий в отпуске',
+            image=SimpleUploadedFile("fishing.jpeg", b"fake image content", content_type="image/jpeg"),
+        )
+        cls.comment = Comment.objects.create(
+            post=post, name='Комментатор 1', email='com1@gmail.com', text='Текст комментария 1'
+        )
+        Comment.objects.create(
+            post=post, name='Комментатор 2', email='com2@gmail.com', text='Ответ на комментарий 1', parent=cls.comment
+        )
+
+    @classmethod
+    def setUp(cls):
+        cls.comment = Comment.objects.get(name='Комментатор 1')
+
+    def test_post_to_model(self):
+        fact_to_model = self.comment._meta.get_field('post').remote_field.model
+        self.assertEqual(fact_to_model, Post)
+
+    def test_post_verbose_name(self):
+        fact_verbose_name = self.comment._meta.get_field('post').verbose_name
+        self.assertEqual(fact_verbose_name, 'Запись')
+
+    def test_post_on_delete(self):
+        fact_on_delete = self.comment._meta.get_field('post').remote_field.on_delete
+        self.assertEqual(fact_on_delete, CASCADE)
+
+    def test_post_related_name(self):
+        fact_related_name = self.comment._meta.get_field('post').remote_field.related_name
+        self.assertEqual(fact_related_name, 'comments')
+
+    def test_parent_model_to(self):
+        fact_model_to = self.comment._meta.get_field('parent').remote_field.model
+        self.assertEqual(fact_model_to, Comment)
+
+    def test_parent_verbose_name(self):
+        fact_verbose_name = self.comment._meta.get_field('parent').verbose_name
+        self.assertEqual(fact_verbose_name, 'Родитель')
+
+    def test_parent_on_delete(self):
+        fact_on_delete = self.comment._meta.get_field('parent').remote_field.on_delete
+        self.assertEqual(fact_on_delete, SET_NULL)
+
+    def test_parent_blank(self):
+        fact_blank = self.comment._meta.get_field('parent').blank
+        self.assertTrue(fact_blank)
+
+    def test_parent_null(self):
+        fact_null = self.comment._meta.get_field('parent').null
+        self.assertTrue(fact_null)
+
+    def test_parent_related_name(self):
+        fact_related_name = self.comment._meta.get_field('parent').remote_field.related_name
+        self.assertEqual(fact_related_name, 'parent_comments')
+
+    def test_name_verbose_name(self):
+        fact_verbose_name = self.comment._meta.get_field('name').verbose_name
+        self.assertEqual(fact_verbose_name, 'Имя')
+
+    def test_name_max_length(self):
+        fact_max_length = self.comment._meta.get_field('name').max_length
+        self.assertEqual(fact_max_length, 80)
+
+    def test_text_verbose_name(self):
+        fact_verbose_name = self.comment._meta.get_field('text').verbose_name
+        self.assertEqual(fact_verbose_name, 'Содержание комментария')
+
+    def test_text_max_length(self):
+        fact_max_length = self.comment._meta.get_field('text').max_length
+        self.assertEqual(fact_max_length, 5000)
+
+    def test_created_auto_now_add(self):
+        fact_auto_now_add = self.comment._meta.get_field('created').auto_now_add
+        self.assertTrue(fact_auto_now_add)
+
+    def test_updated_auto_now(self):
+        fact_auto_now = self.comment._meta.get_field('updated').auto_now
+        self.assertTrue(fact_auto_now)
+
+    def test_active_default(self):
+        fact_default = self.comment._meta.get_field('active').default
+        self.assertTrue(fact_default)
+
+    def test_object_name_is_name_and_post(self):
+        expected_object_name = f'Комментарий от {self.comment.name} к {self.comment.post}'
+        self.assertEqual(str(self.comment), expected_object_name)
+
+    def test_model_verbose_name(self):
+        fact_verbose_name = self.comment._meta.verbose_name
+        self.assertEqual(fact_verbose_name, 'Комментарий')
+
+    def test_model_verbose_name_plural(self):
+        fact_verbose_name_plural = self.comment._meta.verbose_name_plural
+        self.assertEqual(fact_verbose_name_plural, 'Комментарии')
+
+    def test_model_ordering(self):
+        fact_ordering = self.comment._meta.ordering
+        self.assertEqual(fact_ordering, ('created',))

@@ -1,5 +1,4 @@
 from django.contrib.auth import get_user_model
-from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.validators import FileExtensionValidator
 from django.db.models import CASCADE, SET_NULL, Index
 from django.test import TestCase
@@ -8,6 +7,7 @@ from taggit.models import Tag
 
 from blog.models import Category, Comment, Mark, Post, Rating, Video
 from blog_by_me.settings import LANGUAGE_CODE
+from tests.blog import factories
 
 
 class CategoryModelTest(TestCase):
@@ -15,11 +15,11 @@ class CategoryModelTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        Category.objects.create(name='Наука', description='Категория о науке', url='science')
+        factories.CategoryFactory.create()
 
     @classmethod
     def setUp(cls):
-        cls.category = Category.objects.get(name='Наука')
+        cls.category = Category.objects.first()
 
     def test_name_verbose_name(self):
         fact_verbose_name = self.category._meta.get_field('name').verbose_name
@@ -59,15 +59,11 @@ class VideoModelTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        Video.objects.create(
-            title='Котята',
-            description='Забавные котята',
-            file=SimpleUploadedFile("cats.mp4", b"fake video content", content_type="video/mp4"),
-        )
+        factories.VideoFactory.create()
 
     @classmethod
     def setUp(cls):
-        cls.video = Video.objects.get(title='Котята')
+        cls.video = Video.objects.first()
 
     def test_title_max_lenght(self):
         fact_max_length = self.video._meta.get_field('title').max_length
@@ -119,23 +115,11 @@ class PostModelTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        author = get_user_model().objects.create(
-            username='Maximus', description='Описание пользователя', email='maximus@gmail.com'
-        )
-        category = Category.objects.create(name='Развлечения', description='Описание категории', url='entertainment')
-
-        cls.post = Post.objects.create(
-            title='Как я провёл отпуск',
-            url='kak-ya-provel-otpusk',
-            author=author,
-            category=category,
-            body='Содержание событий в отпуске',
-            image=SimpleUploadedFile("fishing.jpeg", b"fake image content", content_type="image/jpeg"),
-        )
+        factories.PostFactory.create()
 
     @classmethod
     def setUp(cls):
-        cls.post = Post.objects.get(title='Как я провёл отпуск')
+        cls.post = Post.objects.first()
 
     def test_title_verbose_name(self):
         fact_verbose_name = self.post._meta.get_field('title').verbose_name
@@ -274,15 +258,9 @@ class PostModelTest(TestCase):
         self.assertEquals(fact_url, expected_url)
 
     def test_get_comment(self):
-        comment1 = Comment.objects.create(
-            post=self.post, name='Комментатор 1', email='com1@gmail.com', text='Текст комментария 1'
-        )
-        Comment.objects.create(
-            post=self.post, name='Комментатор 2', email='com2@gmail.com', text='Текст комментария 2', active=False
-        )
-        Comment.objects.create(
-            post=self.post, name='Комментатор 3', email='com3@gmail.com', text='Ответ на комментарий 1', parent=comment1
-        )
+        comment1 = factories.CommentFactory.create(post=self.post)
+        factories.CommentFactory.create(post=self.post, active=False)
+        factories.CommentFactory.create(post=self.post, parent=comment1)
 
         # проверка фильтров в тестируемом методе
         fact_comments_to_post = self.post.get_comment()
@@ -320,28 +298,13 @@ class CommentModelTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        author = get_user_model().objects.create(
-            username='Maximus', description='Описание пользователя', email='maximus@gmail.com'
-        )
-        category = Category.objects.create(name='Развлечения', description='Описание категории', url='entertainment')
-        post = Post.objects.create(
-            title='Как я провёл отпуск',
-            url='kak-ya-provel-otpusk',
-            author=author,
-            category=category,
-            body='Содержание событий в отпуске',
-            image=SimpleUploadedFile("fishing.jpeg", b"fake image content", content_type="image/jpeg"),
-        )
-        cls.comment = Comment.objects.create(
-            post=post, name='Комментатор 1', email='com1@gmail.com', text='Текст комментария 1'
-        )
-        Comment.objects.create(
-            post=post, name='Комментатор 2', email='com2@gmail.com', text='Ответ на комментарий 1', parent=cls.comment
-        )
+        post = factories.PostFactory.create()
+        comment = factories.CommentFactory.create(post=post)
+        factories.CommentFactory.create(post=post, parent=comment)
 
     @classmethod
     def setUp(cls):
-        cls.comment = Comment.objects.get(name='Комментатор 1')
+        cls.comment = Comment.objects.first()
 
     def test_post_to_model(self):
         fact_to_model = self.comment._meta.get_field('post').remote_field.model
@@ -433,11 +396,11 @@ class MarkModelTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        Mark.objects.create(nomination='Лайк', value=1)
+        factories.MarkFactory.create()
 
     @classmethod
     def setUp(cls):
-        cls.mark = Mark.objects.get(nomination='Лайк')
+        cls.mark = Mark.objects.first()
 
     def test_nomination_verbose_name(self):
         fact_verbose_name = self.mark._meta.get_field('nomination').verbose_name
@@ -477,25 +440,11 @@ class RatingModelTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        author = get_user_model().objects.create(
-            username='Maximus', description='Описание пользователя', email='maximus@gmail.com'
-        )
-        category = Category.objects.create(name='Развлечения', description='Описание категории', url='entertainment')
-        post = Post.objects.create(
-            title='Как я провёл отпуск',
-            url='kak-ya-provel-otpusk',
-            author=author,
-            category=category,
-            body='Содержание событий в отпуске',
-            image=SimpleUploadedFile("fishing.jpeg", b"fake image content", content_type="image/jpeg"),
-        )
-        mark = Mark.objects.create(nomination='Лайк', value=1)
-
-        Rating.objects.create(ip='127.0.0.1', mark=mark, post=post)
+        factories.RatingFactory.create()
 
     @classmethod
     def setUp(cls):
-        cls.rating = Rating.objects.get(ip='127.0.0.1', post__url='kak-ya-provel-otpusk')
+        cls.rating = Rating.objects.first()
 
     def test_ip_verbose_name(self):
         fact_verbose_name = self.rating._meta.get_field('ip').verbose_name

@@ -3,8 +3,8 @@ from django.core.exceptions import ValidationError
 from django.db.models import CASCADE
 from django.test import TestCase
 
-from flatpage_contact.models import NewFlatpage
-from tests.flatpage_contact.factories import NewFlatpageFactory
+from flatpage_contact.models import Contact, NewFlatpage
+from tests.flatpage_contact.factories import ContactFactory, NewFlatpageFactory
 
 
 class NewFlatpageModelTest(TestCase):
@@ -73,3 +73,55 @@ class NewFlatpageModelTest(TestCase):
     def test_model_verbose_name_plural(self):
         fact_verbose_name_plural = self.new_flatpage._meta.verbose_name
         self.assertEqual(fact_verbose_name_plural, 'Содержание страницы')
+
+
+class ContactModelTest(TestCase):
+    """Тестирование модели Contact"""
+
+    @classmethod
+    def setUpTestData(cls):
+        ContactFactory.create()
+
+    @classmethod
+    def setUp(cls):
+        cls.contact = Contact.objects.first()
+
+    def test_name_verbose_name(self):
+        fact_verbose_name = self.contact._meta.get_field('name').verbose_name
+        self.assertEqual(fact_verbose_name, 'Имя')
+
+    def test_email_verbose_name(self):
+        fact_verbose_name = self.contact._meta.get_field('email').verbose_name
+        self.assertEqual(fact_verbose_name, 'Эл. почта')
+
+    def test_phone_verbose_name(self):
+        fact_verbose_name = self.contact._meta.get_field('phone').verbose_name
+        self.assertEqual(fact_verbose_name, 'Телефон')
+
+    def test_message_verbose_name(self):
+        fact_verbose_name = self.contact._meta.get_field('message').verbose_name
+        self.assertEqual(fact_verbose_name, 'Сообщение')
+
+    def test_date_auto_now_add(self):
+        fact_auto_now_add = self.contact._meta.get_field('date').auto_now_add
+        self.assertTrue(fact_auto_now_add)
+
+    def test_feedback_verbose_name(self):
+        fact_verbose_name = self.contact._meta.get_field('feedback').verbose_name
+        self.assertEqual(fact_verbose_name, 'Обрантая связь')
+
+    def test_feedback_default(self):
+        fact_default = self.contact._meta.get_field('feedback').default
+        self.assertFalse(fact_default)
+
+    def test_object_name_is_email(self):
+        expected_object_name = self.contact.email
+        self.assertEqual(str(self.contact), expected_object_name)
+
+    def test_model_verbose_name(self):
+        fact_verbose_name = self.contact._meta.verbose_name
+        self.assertEqual(fact_verbose_name, 'Запрос от пользователя блога')
+
+    def test_verbose_name_plural(self):
+        fact_verbose_name_plural = self.contact._meta.verbose_name_plural
+        self.assertEqual(fact_verbose_name_plural, 'Запросы от пользователей блога')

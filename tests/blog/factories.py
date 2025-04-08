@@ -1,5 +1,5 @@
 from django.core.files.uploadedfile import SimpleUploadedFile
-from factory import Faker, SubFactory
+from factory import Faker, Sequence, SubFactory
 from factory.django import DjangoModelFactory
 
 from blog.models import Category, Comment, Mark, Post, Rating, Video
@@ -28,8 +28,8 @@ class PostFactory(DjangoModelFactory):
     class Meta:
         model = Post
 
-    title = 'Как я провёл отпуск'
-    url = 'kak-ya-provel-otpusk'
+    title = Sequence(lambda n: f'Как я провёл отпуск. Часть {n+1}')
+    url = Sequence(lambda n: f'kak-ya-provel-otpusk{n+1}')
     author = SubFactory(CustomUserFactory)
     category = SubFactory(CategoryFactory)
     body = 'Содержание событий в отпуске'

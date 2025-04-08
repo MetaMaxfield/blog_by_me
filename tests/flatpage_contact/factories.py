@@ -2,7 +2,7 @@ from django.contrib.flatpages.models import FlatPage
 from factory import Faker, SubFactory
 from factory.django import DjangoModelFactory
 
-from flatpage_contact.models import NewFlatpage
+from flatpage_contact.models import Contact, NewFlatpage
 
 
 class FlatPageFactory(DjangoModelFactory):
@@ -30,3 +30,13 @@ class NewFlatpageFactory(DjangoModelFactory):
     email_contact = Faker('email')
     phone1_num = Faker('phone_number')
     phone2_num = Faker('phone_number')
+
+
+class ContactFactory(DjangoModelFactory):
+    class Meta:
+        model = Contact
+
+    name = Faker('name')
+    email = Faker('email')
+    phone = Faker('phone_number')
+    message = Faker('sentence', nb_words=10)

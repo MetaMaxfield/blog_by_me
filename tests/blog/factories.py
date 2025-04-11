@@ -3,6 +3,7 @@ from factory import Faker, Sequence, SubFactory
 from factory.django import DjangoModelFactory
 
 from blog.models import Category, Comment, Mark, Post, Rating, Video
+from blog_by_me.settings import RU_TITLE_LIKE_MARK
 from tests.users.factories import CustomUserFactory
 
 
@@ -50,7 +51,7 @@ class MarkFactory(DjangoModelFactory):
     class Meta:
         model = Mark
 
-    nomination = 'Лайк'
+    nomination = RU_TITLE_LIKE_MARK
     value = 1
 
 

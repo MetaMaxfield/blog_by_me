@@ -25,9 +25,9 @@ def search_by_date(date_posts: int, object_list: QuerySet) -> QuerySet:
     """
     current_datetime = timezone.now()
     object_list = object_list.filter(
-        created__year=current_datetime.year,
-        created__month=current_datetime.month,
-        created__day=date_posts,
+        publish__year=current_datetime.year,
+        publish__month=current_datetime.month,
+        publish__day=date_posts,
     )
     return object_list
 

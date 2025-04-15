@@ -101,11 +101,11 @@ def _qs_days_posts_in_current_month() -> QuerySet:
     """Дни публикаций в текущем месяце для календаря"""
     current_datetime = timezone.now()
     return Post.objects.filter(
-        created__year=current_datetime.year,
-        created__month=current_datetime.month,
+        publish__year=current_datetime.year,
+        publish__month=current_datetime.month,
         draft=False,
         publish__lte=timezone.now(),
-    ).values_list('created__day')
+    ).values_list('publish__day')
 
 
 def not_definite_qs(*args: tuple) -> NoReturn:

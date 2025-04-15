@@ -1,6 +1,10 @@
 .env
 venv
+testvenv
 .idea
 __pycache__
 media/*
 !*media/.gitkeep
+htmlcov
+.coverage
+todo.txt

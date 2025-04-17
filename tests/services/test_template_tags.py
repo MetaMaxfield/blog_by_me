@@ -1,7 +1,7 @@
 from django.test import SimpleTestCase
 from parameterized import parameterized
 
-from services.template_tags import service_ru_plural
+from services.template_tags import service_ru_plural, service_share_url_format
 
 
 class RuPluralTest(SimpleTestCase):
@@ -27,3 +27,11 @@ class RuPluralTest(SimpleTestCase):
     def test_service_ru_plural(self, _, value, variants, expected_variant):
         fact_variant = service_ru_plural(value, variants)
         self.assertEqual(fact_variant, expected_variant)
+
+
+class ShareUrlFormatTest(SimpleTestCase):
+    """Тестирование функции service_share_url_format"""
+
+    def test_service_share_url_format(self):
+        fact_url = service_share_url_format('http://127.0.0.1:8000/ru/')
+        self.assertEqual(fact_url, 'http://127.0.0.1:8000')

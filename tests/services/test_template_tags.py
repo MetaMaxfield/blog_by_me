@@ -1,7 +1,11 @@
-from django.test import SimpleTestCase
+from django.test import SimpleTestCase, TestCase
+from django.utils import timezone
 from parameterized import parameterized
 
-from services.template_tags import service_ru_plural, service_share_url_format
+from blog.models import Post
+from services.template_tags import add_posts_days_in_list, service_ru_plural, service_share_url_format
+from tests.blog.factories import CategoryFactory, PostFactory
+from tests.users.factories import CustomUserFactory
 
 
 class RuPluralTest(SimpleTestCase):
@@ -35,3 +39,25 @@ class ShareUrlFormatTest(SimpleTestCase):
     def test_service_share_url_format(self):
         fact_url = service_share_url_format('http://127.0.0.1:8000/ru/')
         self.assertEqual(fact_url, 'http://127.0.0.1:8000')
+
+
+class AddPostsDaysInListTest(TestCase):
+    """Тестирование функции add_posts_days_in_list"""
+
+    def test_add_posts_days_in_list(self):
+        # создаём автора и категорию для постов
+        category = CategoryFactory.create()
+        author = CustomUserFactory.create()
+
+        # создаём два поста с датой "1" и один пост с датой "2"
+        PostFactory.create_batch(2, category=category, author=author, publish=timezone.now().replace(day=1))
+        PostFactory.create(category=category, author=author, publish=timezone.now().replace(day=2))
+
+        # получаем QuerySet с датами постов
+        queryset = Post.objects.all().values_list('publish__day')
+
+        # получаем на основе переданного QuerySet числа дней публикации
+        fact_days = add_posts_days_in_list(queryset)
+
+        # проверям что вовзращены только уникальные числа дней публикации
+        self.assertEqual(fact_days, {1, 2})

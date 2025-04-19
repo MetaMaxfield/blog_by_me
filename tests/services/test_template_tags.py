@@ -3,7 +3,7 @@ from django.utils import timezone
 from parameterized import parameterized
 
 from blog.models import Post
-from services.template_tags import add_posts_days_in_list, service_ru_plural, service_share_url_format
+from services.template_tags import add_posts_days_in_list, service_age_tag, service_ru_plural, service_share_url_format
 from tests.blog.factories import CategoryFactory, PostFactory
 from tests.users.factories import CustomUserFactory
 
@@ -61,3 +61,18 @@ class AddPostsDaysInListTest(TestCase):
 
         # проверям что вовзращены только уникальные числа дней публикации
         self.assertEqual(fact_days, {1, 2})
+
+
+class ServiceAgeTag(SimpleTestCase):
+    """Тестирование функции service_age_tag"""
+
+    @parameterized.expand(
+        [
+            ('1', timezone.timedelta(days=-2), 1),  # День рождения был более года назад, возраст должен быть 1
+            ('0', timezone.timedelta(days=2), 0),  # День рождения ещё не наступил, возраст должен быть 0
+        ]
+    )
+    def test_service_age_tag(self, _, timedelta, expected_years_old):
+        birthday = timezone.now().date() - timezone.timedelta(days=365) + timedelta
+        fact_years_old = service_age_tag(birthday)
+        self.assertEqual(fact_years_old, expected_years_old)

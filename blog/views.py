@@ -5,7 +5,7 @@ from django.views import View
 from django.views.generic import DetailView, ListView
 
 from blog_by_me import settings
-from services import client_ip, rating, search, validator
+from services import client_ip, rating, search
 
 # from services.blog.paginator import create_pagination
 from services.blog.video_player import open_file
@@ -112,7 +112,7 @@ class PostsFilterTagView(ListView):
 #             slug: str
 #     ) -> HttpResponse:
 #         post = get_cached_objects_or_queryset(settings.KEY_POST_DETAIL, slug)
-#         selected = validator.validator_selected_rating(client_ip.get_client_ip(request), post)
+#         selected = rating.get_rating_or_none(client_ip.get_client_ip(request), post)
 #         return render(request, 'blog/post_detail.html',
 #                       {'post': post,
 #                        'form': CommentsForm(),
@@ -130,9 +130,7 @@ class PostDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context['form'] = CommentsForm()
         context['rating_form'] = RatingForm
-        context['selected'] = validator.validator_selected_rating(
-            client_ip.get_client_ip(self.request), context['post']
-        )
+        context['selected'] = rating.get_rating_or_none(client_ip.get_client_ip(self.request), context['post'])
         return context
 
 

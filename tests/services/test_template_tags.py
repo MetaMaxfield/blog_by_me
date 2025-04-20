@@ -1,9 +1,16 @@
 from django.test import SimpleTestCase, TestCase
 from django.utils import timezone
 from parameterized import parameterized
+from phonenumber_field.phonenumber import PhoneNumber
 
 from blog.models import Post
-from services.template_tags import add_posts_days_in_list, service_age_tag, service_ru_plural, service_share_url_format
+from services.template_tags import (
+    add_posts_days_in_list,
+    service_age_tag,
+    service_format_phone_num,
+    service_ru_plural,
+    service_share_url_format,
+)
 from tests.blog.factories import CategoryFactory, PostFactory
 from tests.users.factories import CustomUserFactory
 
@@ -76,3 +83,12 @@ class ServiceAgeTag(SimpleTestCase):
         birthday = timezone.now().date() - timezone.timedelta(days=365) + timedelta
         fact_years_old = service_age_tag(birthday)
         self.assertEqual(fact_years_old, expected_years_old)
+
+
+class ServiceFormatPhoneNum(SimpleTestCase):
+    """Тестирование функции service_format_phone_num"""
+
+    def test_service_format_phone_num(self):
+        unformatted_phone_num = PhoneNumber.from_string(phone_number='+79993332211')
+        fact_formatted_phone_num = service_format_phone_num(unformatted_phone_num)
+        self.assertEqual(fact_formatted_phone_num, '+7 (999) 333-22-11')

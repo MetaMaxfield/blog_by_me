@@ -1,9 +1,6 @@
-import os
-
 from django.core.mail import send_mail
-from dotenv import load_dotenv
 
-load_dotenv()
+from blog_by_me.settings import EMAIL_HOST_USER
 
 
 def send(user_mail: str) -> None:
@@ -11,7 +8,7 @@ def send(user_mail: str) -> None:
     send_mail(
         'Запрос к администрации веб-приложения MAXFIELD.',
         'Ваш запрос зарегистрирован. Ожидайте обратную связь на данный адрес эл. почты. ',
-        os.getenv('MAIL_KEY'),
+        EMAIL_HOST_USER,
         [user_mail],
         fail_silently=False,
     )

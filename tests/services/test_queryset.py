@@ -1,11 +1,13 @@
 from unittest import mock
 
-from django.test import SimpleTestCase
+from django.test import SimpleTestCase, TestCase
 from parameterized import parameterized
 
+from blog.models import Category
 from blog_by_me import settings
 from services import queryset
-from services.queryset import qs_definition
+from services.queryset import _qs_categories_list, qs_definition
+from tests.blog.factories import CategoryFactory
 
 
 class NotDefiniteQSTest(SimpleTestCase):
@@ -57,3 +59,17 @@ class QSDefinitionTest(SimpleTestCase):
 
         # Проверка №2. Возвращаемое значение совпадает с ожидаемым
         self.assertEqual(fact_return, expected_return)
+
+
+class QSCategoriesListTest(TestCase):
+    """Тестирование функции _qs_categories_list"""
+
+    def test__qs_categories_list(self):
+        CategoryFactory.create_batch(5)
+
+        # получение ожидаемого списка категорий и категорий из тестируемой функции
+        # с дополнительной сортировкой, так как она явно не задана
+        expected_categories = Category.objects.all().order_by('id')
+        fact_categories = _qs_categories_list().order_by('id')
+
+        self.assertQuerysetEqual(fact_categories, expected_categories)

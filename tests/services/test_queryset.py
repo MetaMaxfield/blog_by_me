@@ -126,11 +126,11 @@ class QSPostListTest(TestCase):
             '"blog_post"."body_ru", "blog_post"."body_en", "blog_post"."image", "blog_post"."publish", '
             'COUNT("blog_comment"."id") AS "ncomments", "blog_category"."id", "blog_category"."name", '
             '"blog_category"."name_ru", "blog_category"."name_en", "blog_category"."description", '
-            '"blog_category"."description_ru", "blog_category"."description_en", "blog_category"."url" FROM '
-            '"blog_post" LEFT OUTER JOIN "blog_comment" ON ("blog_post"."id" = "blog_comment"."post_id") LEFT OUTER '
-            'JOIN "blog_category" ON ("blog_post"."category_id" = "blog_category"."id") WHERE (NOT "blog_post"."draft" '
-            f'AND "blog_post"."publish" <= {self.now_time}) GROUP BY "blog_post"."id", '
-            '"blog_category"."id" ORDER BY "blog_post"."publish" DESC, "blog_post"."id" DESC'
+            '"blog_category"."description_ru", "blog_category"."description_en", "blog_category"."url" '
+            'FROM "blog_post" LEFT OUTER JOIN "blog_comment" ON ("blog_post"."id" = "blog_comment"."post_id") '
+            'LEFT OUTER JOIN "blog_category" ON ("blog_post"."category_id" = "blog_category"."id") WHERE '
+            f'(NOT "blog_post"."draft" AND "blog_post"."publish" <= {self.now_time}) GROUP BY '
+            '"blog_post"."id", "blog_category"."id" ORDER BY "blog_post"."publish" DESC, "blog_post"."id" DESC'
         )
         self.assertEqual(expected_query, fact_query)
 
@@ -147,7 +147,8 @@ class QSPostListTest(TestCase):
                 fact_prefetch2_query = str(p.queryset.query)
                 break
         expected_prefetch_query = (
-            'SELECT "users_customuser"."id", "users_customuser"."username" FROM "users_customuser"'
+            'SELECT "users_customuser"."id", "users_customuser"."username" FROM '
+            '"users_customuser" ORDER BY "users_customuser"."date_joined" ASC'
         )
         # Проверка №2. Наличие префетча 'author' с кастомным queryset через Prefetch (по SQL-запросу)
         self.assertEqual(fact_prefetch2_query, expected_prefetch_query)

@@ -11,9 +11,9 @@ class CategoryFactory(DjangoModelFactory):
     class Meta:
         model = Category
 
-    name = 'Развлечения'
+    name = Sequence(lambda n: f'Категория {n+1}')
     description = 'Описание категории'
-    url = 'entertainment'
+    url = Sequence(lambda n: f'category{n+1}')
 
 
 class VideoFactory(DjangoModelFactory):

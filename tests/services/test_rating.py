@@ -5,8 +5,8 @@ from django.urls import reverse
 
 from blog.models import Rating
 from blog_by_me.settings import RU_TITLE_DISLIKE_MARK
-from services.rating import create_or_update_rating
-from tests.blog.factories import MarkFactory, PostFactory
+from services.rating import create_or_update_rating, get_rating_or_none
+from tests.blog.factories import MarkFactory, PostFactory, RatingFactory
 from tests.users.factories import CustomUserFactory
 
 
@@ -71,3 +71,25 @@ class CreateOrUpdateRatingTest(TestCase):
 
         # Проверка №2. При установке дизлайка счётчик лайков не изменяется
         self.assertEqual(fact_total_likes, expected_total_likes)
+
+
+class GetRatingOrNoneTest(TestCase):
+    """Тестирование функции get_rating_or_none"""
+
+    def test_validator_selected_rating(self):
+        # определние ip пользователя и поста для оценки
+        client_ip = '127.0.0.1'
+        post = PostFactory.create()
+
+        # получение рейтинга к посту для заданного ip
+        fact_rating = get_rating_or_none(client_ip, post)
+        # Проверка №1. Рейтинг ещё не установлен, так как пользователь не оставлял оценку
+        self.assertIsNone(fact_rating)
+
+        # пользователь оценивает пост
+        expected_rating = RatingFactory.create(post=post, ip=client_ip)
+
+        # получение рейтинга к посту для заданного ip
+        fact_rating = get_rating_or_none(client_ip, post)
+        # Проверка №2. Возвращённый рейтинг совпадает с тем, что оставил пользователь
+        self.assertEqual(fact_rating, expected_rating)

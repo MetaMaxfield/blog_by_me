@@ -3,6 +3,7 @@ import platform
 import subprocess
 import sys
 import tarfile
+import time
 import venv
 from urllib.request import urlretrieve
 
@@ -24,12 +25,12 @@ VARIABLES_WITH_RANDOM_VALUES = (
     'KEY_ALL_TAGS',
     'KEY_POSTS_CALENDAR',
 )
+DATABASE_NAME = 'blog_by_me'
 VARIABLES_WITH_SET_VALUES = (
     'EMAIL_HOST_USER_KEY',
     'EMAIL_HOST_PASSWORD_KEY',
     'ENV_RECAPTCHA_PUBLIC_KEY',
     'ENV_RECAPTCHA_PRIVATE_KEY',
-    'KEY_DATABASES_NAME',
     'KEY_DATABASES_USER',
     'KEY_DATABASES_PASSWORD',
 )
@@ -125,6 +126,16 @@ def _generate_env_variables():
 
 
 @register('post')
+def _auto_set_env_database_name():
+    from dotenv import set_key
+
+    print('Автодобавление переменной с наименованием БД...')
+    set_key('.env', 'KEY_DATABASES_NAME', DATABASE_NAME)
+    print('Переменная окружения добавлена.')
+    print()
+
+
+@register('post')
 def _set_env_variables():
     from dotenv import set_key
 
@@ -164,7 +175,8 @@ def _start_docker_compose():
 
 @register('post')
 def _run_server():
-    print('Запуск локального сервера.')
+    print('Запуск локального сервера...')
+    time.sleep(5)
     subprocess.run([VENV_PYTHON, 'manage.py', 'runserver'], check=True)
 
 

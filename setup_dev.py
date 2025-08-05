@@ -33,6 +33,7 @@ VARIABLES_WITH_SET_VALUES = (
     'ENV_RECAPTCHA_PRIVATE_KEY',
     'KEY_DATABASES_USER',
     'KEY_DATABASES_PASSWORD',
+    'REDIS_PASSWORD',
 )
 VENV_PYTHON = 'venv\\Scripts\\python.exe' if platform.system() == 'Windows' else 'venv/bin/python'
 

@@ -386,11 +386,15 @@ KEY_POSTS_CALENDAR = os.getenv('KEY_POSTS_CALENDAR')
 CACHE_KEY = os.getenv('CACHE_KEY')
 
 
+# Пароль для доступа к Redis
+REDIS_PASSWORD = os.getenv('REDIS_PASSWORD')
+
+
 # Настройки кэша
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
-        'LOCATION': '127.0.0.1:11211',
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': f'redis://:{REDIS_PASSWORD}@127.0.0.1:6379/1',
     }
 }
 

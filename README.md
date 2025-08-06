@@ -9,8 +9,7 @@
 ![Static Badge](https://img.shields.io/badge/Django-4.2-lightgrey?logo=Django&labelColor=darkgreen)
 ![Static Badge](https://img.shields.io/badge/PostgreSQL-%231f618d?logo=postgresql&logoColor=white)
 ![Static Badge](https://img.shields.io/badge/Docker-blue?logo=docker&logoColor=white)
-![Static Badge](https://img.shields.io/badge/Memcached-%2316a085)
-
+![Static Badge](https://img.shields.io/badge/Redis-%23A60000?logo=redis&logoColor=white)
 
 Полноценный веб-проект с реализованным back-end на Django.
 
@@ -28,7 +27,7 @@
 - [Python 3.11](https://www.python.org/downloads/release/python-3110/)
 - [Django 4.2.1](https://docs.djangoproject.com/en/4.2/)
 - [PostgreSQL](https://www.postgresql.org/)
-- [Memcached](https://memcached.org/)
+- [Redis](https://redis.io/)
 - [SMTP Gmail](https://myaccount.google.com/apppasswords)
 - [Google reCAPTCHA v3](https://www.google.com/recaptcha/admin/create?hl=ru)
 - [Docker](https://www.docker.com/)
@@ -241,6 +240,8 @@
      ENV_RECAPTCHA_PRIVATE_KEY=   # Секретный ключ из Google ReCAPTCHA
      KEY_DATABASES_USER=          # Имя пользователя в PostgreSQL
      KEY_DATABASES_PASSWORD=      # Пароль пользователя в PostgreSQL
+     # Переменная окружения, значение которой определить самостоятельно
+     REDIS_PASSWORD=              # Пароль для подключения к Redis
      ```
      
 6. Проект готов к локальной разработке. Локальный сервер запущен автоматически.
